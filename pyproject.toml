@@ -22,6 +22,7 @@ dev = [
     "pytest-xdist>=3.6",
     "pyyaml>=6.0",
     "ruff>=0.8",
+    "types-psutil>=6.0",
     "types-pyyaml>=6.0",
 ]
 
@@ -42,7 +43,7 @@ benchtop-real = { workspace = true }
 benchtop-lab = { workspace = true }
 
 # cu126 has the widest driver support (Kaggle/Colab T4s). It may lag the CPU index by a minor torch version;
-# S03 pins one torch range for both flavours to match LeRobot 0.7.
+# the `cpu`/`cu` extras of benchtop-core pin one torch range for both flavours that matches LeRobot 0.7.
 [[tool.uv.index]]
 name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
@@ -77,7 +78,8 @@ ignore = [
 convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
-"**/tests/**" = ["S101", "D", "PLR2004", "ANN401"]
+# PLC0415: tests import lerobot/torch inside the test that needs them, so collection stays fast.
+"**/tests/**" = ["S101", "D", "PLR2004", "ANN401", "PLC0415"]
 "tools/**" = ["D"]
 
 [tool.ruff.lint.flake8-tidy-imports]
@@ -98,6 +100,11 @@ files = ["packages/*/src", "packages/*/tests", "tests"]
 warn_unreachable = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 pretty = true
+
+# These ship no type information (no py.typed); only compat, the doctor and the fingerprint touch them.
+[[tool.mypy.overrides]]
+module = ["lerobot", "lerobot.*", "mujoco", "mujoco.*"]
+ignore_missing_imports = true
 
 # ---------------------------------------------------------------------------------------------------------------
 # pytest and coverage.
@@ -207,5 +214,5 @@ ignore_imports = [
     "benchtop_core.policies.** -> lerobot",
     "benchtop_core.policies.** -> torch",
 ]
-# "none" only while benchtop_core.compat/policies do not import lerobot yet; switch to "warn" in S03.
-unmatched_ignore_imports_alerting = "none"
+# benchtop_core.policies arrives later (ADR-007), so some of these lines match nothing yet: warn, do not fail.
+unmatched_ignore_imports_alerting = "warn"

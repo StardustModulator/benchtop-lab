@@ -164,6 +164,14 @@ def test_run_steps_do_not_interpolate_expressions_into_shell(path: Path) -> None
 
 
 @pytest.mark.parametrize("path", WORKFLOWS, ids=ids(WORKFLOWS))
+def test_uv_run_never_resyncs_away_the_cpu_torch_wheels(path: Path) -> None:
+    # LeRobot depends on torch, so a plain `uv run` would replace the CPU wheels with PyPI's CUDA build.
+    workflow = load(path)
+    assert any("actions/setup" in str(step.get("uses", "")) for _, step in steps_of(workflow))
+    assert workflow["env"]["UV_NO_SYNC"] == "1"
+
+
+@pytest.mark.parametrize("path", WORKFLOWS, ids=ids(WORKFLOWS))
 def test_every_job_has_a_timeout(path: Path) -> None:
     for job_id, job in load(path)["jobs"].items():
         assert isinstance(job.get("timeout-minutes"), int), f"{path.name}:{job_id}: add `timeout-minutes`"

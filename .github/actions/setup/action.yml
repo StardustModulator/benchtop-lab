@@ -13,8 +13,8 @@ inputs:
     default: "3.12"
   torch:
     description: >-
-      PyTorch flavour to install through the benchtop-core extra: "cpu" (PLAN §11) or "none" for jobs that
-      only run linters.
+      PyTorch flavour to install through the benchtop-core extra: "cpu" (PLAN §11), or "none" for no extra,
+      which installs LeRobot's default wheels from PyPI (CUDA builds on Linux, several gigabytes).
     required: false
     default: cpu
 
