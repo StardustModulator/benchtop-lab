@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(~/.cache/huggingface/token)",
+      "Read(~/.config/gh/hosts.yml)",
+      "Read(~/.pypirc)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push origin --force*)",
+      "Bash(*--no-verify*)",
+      "Bash(uv publish*)",
+      "Bash(twine upload*)",
+      "Bash(huggingface-cli upload*)",
+      "Bash(hf upload*)",
+      "Bash(gh repo delete*)",
+      "Bash(gh release create*)",
+      "Bash(git push*--force*)",
+      "Bash(git push*-f *)",
+      "Bash(git push*+main*)",
+      "Bash(git push --mirror*)",
+      "Bash(git tag*)",
+      "Bash(cat .env*)",
+      "Bash(hf repo*)",
+      "Bash(huggingface-cli repo*)",
+      "Bash(*push_to_hub*)",
+      "Bash(gh auth*)"
+    ]
+  }
+}

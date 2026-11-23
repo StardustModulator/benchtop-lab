@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+.python-version.local
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Secrets (never commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.pypirc
+hf_token*
+token.txt
+
+# Outputs and large artifacts (repo root only; test fixtures and lesson media elsewhere are allowed)
+wandb/
+.trackio/
+/outputs/
+/data/
+/datasets/
+/checkpoints/
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+
+# Docs
+site/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Claude Code local files
+.claude/settings.local.json
+CLAUDE.local.md
