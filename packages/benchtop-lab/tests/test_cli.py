@@ -58,11 +58,11 @@ def test_main_runs_the_app(monkeypatch: pytest.MonkeyPatch, capsys: pytest.Captu
 def test_python_dash_m_runs_the_app(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    monkeypatch.setattr(sys, "argv", ["benchtop", "--version"])
+    monkeypatch.setattr(sys, "argv", ["python -m benchtop_lab", "--help"])
     with pytest.raises(SystemExit) as exc:
         runpy.run_module("benchtop_lab", run_name="__main__")
     assert exc.value.code == 0
-    assert __version__ in capsys.readouterr().out
+    assert "Usage: benchtop " in capsys.readouterr().out
 
 
 def test_installed_console_script_prints_version() -> None:
@@ -83,14 +83,33 @@ def test_no_color_output_has_no_ansi_codes(monkeypatch: pytest.MonkeyPatch) -> N
     assert buf.getvalue() == "✓ Pass ✕ Fail benchtop\n"
 
 
-def test_no_color_beats_force_color_for_colours(monkeypatch: pytest.MonkeyPatch) -> None:
+@pytest.mark.parametrize("force", ["1", "0", ""])
+def test_no_color_means_no_ansi_codes_even_when_forced(monkeypatch: pytest.MonkeyPatch, force: str) -> None:
     monkeypatch.setenv("NO_COLOR", "1")
-    monkeypatch.setenv("FORCE_COLOR", "1")
+    monkeypatch.setenv("FORCE_COLOR", force)
     monkeypatch.setenv("TERM", "xterm-256color")
     buf = io.StringIO()
-    make_console(file=buf).print("[success]ok[/success] [error]bad[/error]")
-    colour_codes = [c for c in ANSI.findall(buf.getvalue()) if re.search(r"\[(3|4|9|10)\d", c)]
-    assert colour_codes == []
+    make_console(file=buf).print("[success]ok[/success] [error]bad[/error] [muted]note[/muted]")
+    assert buf.getvalue() == "ok bad note\n"
+
+
+@pytest.mark.parametrize("force", ["0", "false", "OFF"])
+def test_force_color_zero_does_not_force_styling(monkeypatch: pytest.MonkeyPatch, force: str) -> None:
+    # Regression: Rich alone treats FORCE_COLOR=0 as "force on", which leaked ANSI codes into pipes.
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.setenv("FORCE_COLOR", force)
+    monkeypatch.setenv("TERM", "xterm-256color")
+    buf = io.StringIO()
+    make_console(file=buf).print("[error]bad[/error]")
+    assert buf.getvalue() == "bad\n"
+
+
+def test_empty_no_color_does_not_disable_colour() -> None:
+    buf = io.StringIO()
+    make_console(file=buf, env={"NO_COLOR": "", "FORCE_COLOR": "1", "TERM": "xterm-256color"}).print(
+        "[error]x[/error]"
+    )
+    assert ANSI.search(buf.getvalue())
 
 
 def test_non_tty_output_is_plain_text() -> None:

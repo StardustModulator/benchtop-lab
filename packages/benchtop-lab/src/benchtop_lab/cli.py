@@ -50,5 +50,5 @@ def root(
 
 
 def main() -> None:
-    """Entry point for the `benchtop` console script."""
-    app()
+    """Entry point for the `benchtop` console script and `python -m benchtop_lab`."""
+    app(prog_name="benchtop")
