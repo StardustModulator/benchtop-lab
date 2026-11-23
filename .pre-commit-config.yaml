@@ -4,8 +4,9 @@
 # Install once with `uv run pre-commit install`. Run everything with `uv run pre-commit run --all-files`.
 minimum_pre_commit_version: "4.0.0"
 default_install_hook_types: [pre-commit]
-# Licence texts are kept byte-for-byte as published upstream; never let a fixer touch them.
-exclude: ^(LICENSE|LICENSE-CONTENT|LICENSES/.*)$
+# Licence texts and vendored upstream assets are kept byte-for-byte as published; never let a fixer touch them
+# (this also exempts the SO-101 meshes, up to 2.7 MB each, from the 1 MB large-file guard).
+exclude: ^(LICENSE|LICENSE-CONTENT|LICENSES/.*|packages/benchtop-sim/src/benchtop_sim/assets/robotstudio_so101/(?!UPSTREAM\.md$).*)$
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0

@@ -6,10 +6,13 @@ Written course content, documentation, figures and published datasets are
 licensed under Creative Commons Attribution 4.0 International (see LICENSE-CONTENT),
 unless a file states otherwise.
 
-Third-party components (to be vendored in later milestones; each keeps its own LICENSE file):
+Third-party components vendored in this repository (each keeps its own LICENSE file):
 
-- SO-101 MJCF model ("robotstudio_so101") from MuJoCo Menagerie
+- SO-101 MJCF model and meshes ("robotstudio_so101") from MuJoCo Menagerie, unmodified, at commit
+  370c43965323c0944b433b202aac5058b5f907a9
   https://github.com/google-deepmind/mujoco_menagerie/tree/main/robotstudio_so101
+  Location: packages/benchtop-sim/src/benchtop_sim/assets/robotstudio_so101/
+  (its LICENSE and our UPSTREAM.md are in that directory)
   Licensed under the Apache License, Version 2.0.
   Derived from TheRobotStudio/SO-ARM100 (https://github.com/TheRobotStudio/SO-ARM100),
   Licensed under the Apache License, Version 2.0.

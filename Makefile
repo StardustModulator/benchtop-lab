@@ -33,7 +33,7 @@ test-slow: ## Slow suite (LeRobot training/eval, long simulations)
 	uv run pytest -q -m "slow" || [ $$? -eq 5 ]
 
 test-render: ## Render suite (needs offscreen OpenGL; MUJOCO_GL defaults to egl)
-	MUJOCO_GL=$${MUJOCO_GL:-egl} uv run pytest -q -m "render" || [ $$? -eq 5 ]
+	MUJOCO_GL=$${MUJOCO_GL:-egl} uv run pytest -q -m "render"
 
 test-all: test test-slow test-render ## Fast tests plus the slow and render suites
 
