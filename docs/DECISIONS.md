@@ -27,7 +27,7 @@ Format: `ADR-NNN · Title` — Status (Proposed | Accepted | Superseded by ADR-M
 - Consequences: SPDX headers on every file; `reuse lint` in CI; vendored assets keep their LICENSE files.
 
 ## ADR-004 · uv workspace monorepo with six packages
-- Status: Proposed — 2026-11-23 (accepted in S01)
+- Status: Accepted — 2026-11-23 (S01)
 - Decision: `benchtop-core`, `benchtop-sim`, `benchtop-grade`, `benchtop-data`, `benchtop-real`, `benchtop-lab`
   (CLI meta-package), released together under one version. Dependency rules in ARCHITECTURE §2, enforced by import-linter.
 
@@ -63,3 +63,14 @@ Format: `ADR-NNN · Title` — Status (Proposed | Accepted | Superseded by ADR-M
   Zensical as the successor, compatible with `mkdocs.yml`.
 - Decision: In S04, adopt Zensical if it supports mermaid, admonitions, tabs and API docs (mkdocstrings or equivalent)
   for our needs; otherwise pin Material 9.x and add a migration task before May 2027.
+
+## ADR-010 · Copyleft developer tools run only as isolated external CLIs
+- Status: Accepted — 2026-11-23 (S01)
+- Context: PLAN §11 and ADR-003 require `reuse lint`, but the REUSE tool is GPL-3.0-or-later. CLAUDE.md forbids GPL
+  dependencies so that nothing we ship, import or lock carries a copyleft obligation.
+- Decision: A copyleft tool may be used only as a standalone command that never enters `uv.lock`, is never imported by
+  our code and is never vendored: a pre-commit hook in its own isolated environment, or `uvx` in CI/Makefile. REUSE is
+  the only such tool today; `pip-licenses` and other checks we import stay permissive. Every dependency in `uv.lock`
+  must still pass the permissive/weak-copyleft allowlist.
+- Consequences: `reuse lint` runs from `.pre-commit-config.yaml` and `make reuse` (S02 adds it to CI the same way).
+  Using the tool does not change the licence of our code, as with git (GPL-2.0) on the same machines.
