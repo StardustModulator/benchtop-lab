@@ -78,6 +78,10 @@ flowchart TD
 | `benchtop_real` | Calibration check, real evaluation protocol, grid mat generator | command motion without `--allow-motion` |
 | `benchtop_lab` | The `benchtop` CLI (Typer), `benchtop doctor`, meta-package pulling everything in | contain domain logic |
 
+`benchtop_grade`, `benchtop_data` and `benchtop_real` are independent siblings: none imports another. Shared logic
+they all need (for example Wilson intervals used by both the grader and the real evaluation protocol) belongs in
+`benchtop_core`.
+
 Enforced with import-linter contracts in CI. `benchtop_sim` stays torch-free and dependency-light so EnvHub servers and
 instructors' machines stay small.
 

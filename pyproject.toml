@@ -39,14 +39,16 @@ benchtop-data = { workspace = true }
 benchtop-real = { workspace = true }
 benchtop-lab = { workspace = true }
 
+# cu126 has the widest driver support (Kaggle/Colab T4s). It may lag the CPU index by a minor torch version;
+# S03 pins one torch range for both flavours to match LeRobot 0.7.
 [[tool.uv.index]]
 name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
 explicit = true
 
 [[tool.uv.index]]
-name = "pytorch-cu128"
-url = "https://download.pytorch.org/whl/cu128"
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
 explicit = true
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -88,6 +90,8 @@ docstring-code-format = true
 [tool.mypy]
 python_version = "3.12"
 strict = true
+# Test directories have no __init__.py, so every test file name must be unique across the repo
+# (enforced by tests/test_repo_tooling.py), otherwise mypy reports "Duplicate module named ...".
 files = ["packages/*/src", "packages/*/tests", "tests"]
 warn_unreachable = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
@@ -146,6 +150,7 @@ root_packages = [
 ]
 include_external_packages = true
 
+# "|" makes grade, data and real independent siblings: none may import another (ARCHITECTURE §2).
 [[tool.importlinter.contracts]]
 id = "layers"
 name = "Package layers: CLI -> tools -> core/sim"
@@ -200,4 +205,5 @@ ignore_imports = [
     "benchtop_core.policies.** -> lerobot",
     "benchtop_core.policies.** -> torch",
 ]
+# "none" only while benchtop_core.compat/policies do not import lerobot yet; switch to "warn" in S03.
 unmatched_ignore_imports_alerting = "none"

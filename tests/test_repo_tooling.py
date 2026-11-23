@@ -51,3 +51,13 @@ def test_package_licence_is_a_real_copy_of_the_root_licence(package: str) -> Non
     licence = ROOT / "packages" / f"benchtop-{package}" / "LICENSE"
     assert not licence.is_symlink()
     assert licence.read_bytes() == (ROOT / "LICENSE").read_bytes()
+
+
+def test_test_file_names_are_unique_across_the_repo() -> None:
+    # Test directories have no __init__.py, so mypy and pytest identify test modules by file name alone.
+    names = [p.name for p in ROOT.glob("packages/*/tests/**/*.py")] + [
+        p.name for p in ROOT.glob("tests/**/*.py")
+    ]
+    duplicates = sorted({n for n in names if names.count(n) > 1} - {"__init__.py"})
+    # A second conftest.py also collides; then configure mypy `explicit_package_bases` instead of renaming.
+    assert duplicates == [], f"rename these test files so each name is unique: {duplicates}"

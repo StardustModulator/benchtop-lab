@@ -40,7 +40,7 @@ cu = ["torch>=2.7"]
 [tool.uv.sources]
 torch = [
     { index = "pytorch-cpu", extra = "cpu" },
-    { index = "pytorch-cu128", extra = "cu" },
+    { index = "pytorch-cu126", extra = "cu" },
 ]
 
 [tool.hatch.version]
