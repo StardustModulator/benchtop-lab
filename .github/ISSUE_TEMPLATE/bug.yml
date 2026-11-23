@@ -41,7 +41,7 @@ body:
       description: >-
         Paste the output of `uv run benchtop doctor --json`. If that command is not available yet, give
         `uv run benchtop --version`, your operating system and your Python version.
-      render: json
+      render: text
     validations:
       required: true
   - type: dropdown

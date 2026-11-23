@@ -62,7 +62,9 @@ Out of scope:
 
 ## How we protect the project
 
-- No secrets are stored in the repository; `gitleaks` scans every commit locally and the full history in CI.
+- No secrets are stored in the repository. A `gitleaks` pre-commit hook scans staged changes for contributors who
+  install the hooks, and CI scans the full history on every pull request.
 - CI workflows use actions pinned to full commit SHAs and a read-only token by default.
-- Dependencies are locked (`uv.lock`), limited to permissive licences, and updated through reviewed pull requests.
+- Dependencies are locked (`uv.lock`), limited by policy to permissive or weak-copyleft licences (Apache-2.0, MIT,
+  BSD, ISC, PSF, MPL-2.0), and updated through reviewed pull requests.
 - Benchtop Lab has no telemetry, analytics or tracking of any kind.

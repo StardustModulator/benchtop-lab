@@ -34,7 +34,7 @@ body:
       label: Scene and success condition
       description: >-
         The objects on the table, what the arm must achieve, and how success is measured (for example
-        "cube centre within 2 cm of the target for 10 consecutive steps").
+        "cube centre within 2 cm of the target and the gripper open").
     validations:
       required: true
   - type: textarea

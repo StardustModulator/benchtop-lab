@@ -28,6 +28,7 @@ body:
         - Something is factually wrong or out of date
         - Something is missing
         - Typo or formatting
+        - Something else
     validations:
       required: true
   - type: textarea

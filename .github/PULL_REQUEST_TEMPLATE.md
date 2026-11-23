@@ -16,5 +16,5 @@
 - [ ] `make gate` passes (ruff, import-linter, mypy, tests with coverage ≥ 85%).
 - [ ] Docs, lessons or docstrings updated where behaviour changed.
 - [ ] New files carry an SPDX header (`Apache-2.0` for code, `CC-BY-4.0` for prose).
-- [ ] No secrets, tokens or binaries over 1 MB.
+- [ ] No secrets or tokens, and no compiled binaries (a hook also blocks any file over 1 MB).
 - [ ] New dependencies are permissively licensed (Apache-2.0, MIT, BSD, ISC, PSF, MPL-2.0) and explained above.

@@ -8,7 +8,7 @@ From "I installed LeRobot" to "my policy works, and here are the numbers that pr
 No robot required to start. 100% open source. Nothing is paid, ever.
 
 [![CI](https://github.com/StardustModulator/benchtop-lab/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/StardustModulator/benchtop-lab/actions/workflows/ci.yml?query=branch%3Amain)
-[![Nightly](https://github.com/StardustModulator/benchtop-lab/actions/workflows/nightly.yml/badge.svg?branch=main)](https://github.com/StardustModulator/benchtop-lab/actions/workflows/nightly.yml)
+[![Nightly](https://github.com/StardustModulator/benchtop-lab/actions/workflows/nightly.yml/badge.svg?branch=main)](https://github.com/StardustModulator/benchtop-lab/actions/workflows/nightly.yml?query=branch%3Amain)
 [![License: Apache-2.0](https://img.shields.io/badge/code-Apache--2.0-blue.svg)](LICENSE)
 [![Content: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-lightgrey.svg)](LICENSE-CONTENT)
 ![Status: planning](https://img.shields.io/badge/status-planning-orange.svg)
