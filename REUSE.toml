@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2026 Benchtop Lab contributors
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensing for files that cannot carry an SPDX header (lockfiles, JSON, notebooks, generated files) and the
+# defaults for everything else. A header inside a file always wins ("closest" precedence). ADR-003: code is
+# Apache-2.0; lessons, docs, figures and other prose are CC-BY-4.0. Vendored assets get their own annotation
+# with their upstream licence, and are listed in NOTICE.
+version = 1
+
+[[annotations]]
+path = "**"
+precedence = "closest"
+SPDX-FileCopyrightText = "2026 Benchtop Lab contributors"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = ["**/*.md", "**/*.ipynb", "docs/**", "projects/**/lesson/**", "NOTICE"]
+precedence = "closest"
+SPDX-FileCopyrightText = "2026 Benchtop Lab contributors"
+SPDX-License-Identifier = "CC-BY-4.0"
