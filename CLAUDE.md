@@ -108,6 +108,22 @@ Until S01 creates these tools, the gate is "the repository is consistent and doc
 - Headless rendering: `MUJOCO_GL=egl` (fallback `osmesa`).
 - Coverage target ≥ 85% for `benchtop_*` packages excluding hardware I/O.
 
+## UI excellence (standing owner rule)
+
+Every interface in this repo (MkDocs site, grader report cards and other HTML reports, dataset-doctor output,
+dashboards, the landing page, charts and figures, and rich CLI output) must be **world-class, top-university-lab
+quality**: think MIT CSAIL / Stanford AI Lab project pages and Distill.pub, with Linear/Vercel-level polish.
+
+- Before building or changing any UI, load the **`ui-excellence`** skill (`.claude/skills/ui-excellence/SKILL.md`)
+  and use its design tokens (font pairing Inter + Source Serif 4 + JetBrains Mono, self-hosted; 1.25 type scale;
+  60–75ch prose measure; measured colour tokens with a first-class dark mode; Okabe–Ito chart palette).
+- Accessibility is WCAG 2.2 AA in both themes, responsive down to 320 px, keyboard navigable, no colour-only status.
+- No CDN fonts, analytics, trackers or cookies (ADR-001). OFL-1.1 is allowed for vendored font files only.
+- Verify, don't assume: render it, screenshot light/dark at mobile and desktop widths, run an a11y check when the
+  tooling exists, and add tests (contrast of tokens, required report sections, `NO_COLOR` output).
+- The `reviewer` agent applies the skill's checklist to every UI diff; a UI that would not hold up next to a
+  Distill.pub article is "Must fix", not a nit.
+
 ## Docs and lessons
 
 - Lessons are Markdown under `projects/pN_*/lesson/` and appear on the MkDocs site. Write plainly, define every term on
@@ -128,4 +144,4 @@ uv run mkdocs serve
 
 See `docs/PLAN.md` §10. Planning docs live in `docs/`; project content in `projects/`; packages in `packages/`.
 Claude Code helpers: `.claude/commands/session.md` (`/session`), `.claude/agents/` (`test-runner`, `reviewer`,
-`curriculum-reviewer`), `.claude/skills/` (LeRobot compat, MuJoCo env authoring, lesson writing).
+`curriculum-reviewer`), `.claude/skills/` (LeRobot compat, MuJoCo env authoring, lesson writing, UI excellence).
