@@ -94,7 +94,7 @@ Template for each entry (newest first):
     type, test, test-all, reuse, docs, gate). ADR-004 accepted; ADR-010 added (copyleft dev tools such as REUSE run
     only as isolated CLIs, never in `uv.lock`). ARCHITECTURE §2 now states grade/data/real are independent siblings.
 - Dependencies added (all permissive): runtime `typer` 0.29 (MIT), `rich` 15.0 (MIT) and their deps `click` (BSD-3),
-  `shellingham` (ISC), `typing-extensions` (PSF), `pygments` (BSD-2), `markdown-it-py`/`mdurl` (MIT); dev group
+  `shellingham` (ISC), `typing-extensions` (PSF), `annotated-doc` (MIT), `pydantic`/`pydantic-core`/`annotated-types` (MIT), `typing-inspection` (MIT), `pygments` (BSD-2), `markdown-it-py`/`mdurl` (MIT); dev group
   `ruff` (MIT), `mypy` (MIT), `pytest`, `pytest-cov`, `pytest-xdist` (MIT), `hypothesis` (MPL-2.0),
   `import-linter`/`grimp` (BSD-2), `pre-commit` (MIT); optional extra `torch` (BSD-3). REUSE (GPL-3.0+) is a
   pre-commit/uvx tool only (ADR-010).
@@ -115,6 +115,9 @@ Template for each entry (newest first):
     or add a placeholder test (the Makefile already treats 5 as success).
   - torch: CPU index resolves 2.15.0, cu126 resolves 2.14.1. S03 must pin one torch range compatible with LeRobot 0.7
     for both flavours. Switch import-linter `unmatched_ignore_imports_alerting` to "warn" once compat imports lerobot.
+  - Reviewer follow-up for S03: under `NO_COLOR`, `colour_settings` returns `force_terminal=False`, which also
+    disables Rich live displays/spinners on a real terminal. If `benchtop doctor` wants a spinner, return
+    `force_terminal=None` there (`color_system=None` already strips styles) and update the docstring.
   - Python 3.12 is installed through uv (`uv python install 3.12`); system Python is 3.13.
 - Usage: stopped early due to usage limit? no
 

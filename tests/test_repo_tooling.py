@@ -60,4 +60,9 @@ def test_test_file_names_are_unique_across_the_repo() -> None:
     ]
     duplicates = sorted({n for n in names if names.count(n) > 1} - {"__init__.py"})
     # A second conftest.py also collides; then configure mypy `explicit_package_bases` instead of renaming.
-    assert duplicates == [], f"rename these test files so each name is unique: {duplicates}"
+    hint = (
+        "enable mypy `explicit_package_bases` (conftest.py cannot be renamed)"
+        if "conftest.py" in duplicates
+        else "rename these test files so each name is unique"
+    )
+    assert duplicates == [], f"{hint}: {duplicates}"
