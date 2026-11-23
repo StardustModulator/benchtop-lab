@@ -18,3 +18,6 @@ Procedure:
 4. Flag flaky behaviour: rerun each failing test once in isolation (`uv run pytest <test id>`) and report whether the
    failure is deterministic.
 5. End with a table: stage | status | count | notes. Keep the report under 60 lines.
+
+Keep output small: run pytest with `-q --no-header --tb=short` and pipe long output through `tail -n 60`; never paste
+passing-test output or full logs into your report, only the failing lines that matter.

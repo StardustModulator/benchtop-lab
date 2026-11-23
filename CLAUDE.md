@@ -3,11 +3,11 @@
 You are building **Benchtop Lab**: a free, open-source monorepo of graded, sim-first robot-learning projects for the
 SO-101 arm, built on LeRobot 0.7 and MuJoCo. Quality over speed. Never rush; never cut corners to "finish" a session.
 
-Read these before doing anything:
-1. `docs/PROGRESS.md`: where we are, the next session, blockers, notes from the last session.
-2. `docs/MILESTONES.md`: the session you are executing (goal, tasks, acceptance, tests).
-3. `docs/PLAN.md` and `docs/ARCHITECTURE.md`: the spec. Follow it. If the spec is wrong, record an ADR in
-   `docs/DECISIONS.md` and explain the change; do not silently diverge.
+Read these before doing anything (only the parts you need; see "Working efficiently"):
+1. `docs/PROGRESS.md`: the status table, blockers and the latest session-log entry with its notes for next session.
+2. `docs/MILESTONES.md`: your session's section only (goal, tasks, acceptance, tests).
+3. `docs/PLAN.md` and `docs/ARCHITECTURE.md`: the sections your session cites or touches. Follow the spec. If the
+   spec is wrong, record an ADR in `docs/DECISIONS.md` and explain the change; do not silently diverge.
 
 ## Session protocol (one headless run = one session)
 
@@ -31,6 +31,10 @@ Read these before doing anything:
    - **If anything is red** that you cannot fix in this session: convert the PR to draft (`gh pr ready --undo`) or
      open it with `--draft`, describe what fails and why, record a blocker in PROGRESS.md, and stop.
    - Never push a failing build to `main`. Never use `--no-verify`. Never force-push anything to `main`.
+     (Only the build runner, outside this repo, may save an emergency WIP checkpoint with hooks skipped when a run
+     is cut off, on the `session/*` branch only and after its secret scan and gitleaks pass. When you resume a
+     branch whose tip is such a `wip(...) (hooks skipped)` commit, fix what the hooks report before anything else.
+     Those commits never merge until the hooks, the full gate and CI are green.)
 9. Finish by printing a short summary: session id, DONE/PARTIAL/BLOCKED, commit SHA or PR URL, tests passed, next session.
 
 ## Usage limits
@@ -42,6 +46,32 @@ Read these before doing anything:
   entry in PROGRESS.md saying exactly which task to resume from, push the branch, and end.
 - Do not loop on retries. If the same failure persists after two genuine fix attempts, record it as a blocker.
 - Prefer targeted test runs while iterating (`uv run pytest packages/benchtop-sim -x -q`), full gate once at the end.
+
+## Working efficiently (usage budget)
+
+The Claude usage allowance, not wall-clock time, decides how many sessions finish per night. Every token you add to
+the context is re-read on every later turn, so keep the context small. This changes how you work, never what you
+ship: the gate, tests, review and the UI bar are unchanged.
+
+- **Orient narrowly.** `grep -n '^#' docs/PLAN.md docs/ARCHITECTURE.md`, then `sed -n 'A,Bp'` the sections you need.
+  Read your session in MILESTONES.md with `sed -n '/^### SNN /,/^### /p'` (or its table row). Read PROGRESS.md's
+  status table and the newest log entry only. Never `cat` a whole planning doc, and never `cat` several files in
+  one command; read at most ~200 lines at a time with the Read tool's offset/limit.
+- **Third-party code** (site-packages, cloned upstream repos): `grep -rn` for the symbol, then read that range; for
+  open-ended exploration ask the `Explore` subagent and keep only its summary.
+- **Short command output.** Pipe long output through `| tail -n 40` or `grep`. Pytest while iterating:
+  `uv run pytest <path> -q -x --no-header --tb=short 2>&1 | tail -n 40`; rerun only failing test ids.
+  Use `git diff --stat` before a full diff and diff only the files you need. `uv sync -q`.
+- **Edit, don't rewrite.** Use the Edit tool for changes to existing files instead of regenerating them through
+  `python - <<EOF` or `cat > file`. Don't print a file you just wrote.
+- **Images and the web.** Inspect a rendered screenshot once, at ≤ 800 px wide, and only when checking a UI. Use the
+  `web-fetch` subagent for documentation pages (it returns a summary) rather than WebFetch in the main context.
+- **Gate through the subagent.** Iterate with targeted tests; run the full gate once via `test-runner` before review
+  and once after fixes. Run `uv run ruff check --fix . && uv run ruff format .` before every commit so hooks pass.
+- **One review pass.** Call `reviewer` once on the final diff (milestone-final sessions: one combined pass over the
+  milestone). Fix every Must fix and re-run the gate; call `reviewer` again only if a fix changed the design.
+- **Resume cheaply.** On an existing branch: `git log --oneline main..HEAD`, `git diff main...HEAD --stat` and the
+  PARTIAL notes. Don't re-read files you won't change.
 
 ## The gate (all must pass before merging to main)
 

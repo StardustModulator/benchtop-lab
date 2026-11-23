@@ -38,50 +38,56 @@ and, for design changes, DECISIONS.md; never commit secrets.
 
 **Size.** 70 planned sessions + ~7 contingency = **~77 sessions**.
 
-**Capacity.** Claude Max gives a usage allowance per rolling 5-hour window *and* a weekly allowance, shared with the
-owner's own Claude use (chat and Claude Code). Anthropic publishes no fixed numbers, so we plan conservatively:
-4 run slots per day, each in its own 5-hour window, with each session sized to about half to two-thirds of a window.
-We expect the weekly allowance, not the 5-hour windows, to be the binding limit, so we plan for **~2.5 effective
-sessions per day** on average (some slots will stop early or be skipped).
+**Capacity (revised 23 Nov after the first measured runs).** Claude Max gives a usage allowance per rolling
+5-hour window *and* a weekly allowance, shared with the owner's own Claude use. Builds run **only at night, 23:00–07:00
+IST**, so each night has at most two windows (about 23:00–04:00 and 04:00–07:00). Measured on 23 Nov: one 5-hour
+window is about 5% of the weekly allowance, so two windows a night is about 10% a week-night and the **5-hour window,
+not the weekly allowance, is the binding limit**. Per token, the top model used roughly 4–6× more of the window
+than `opus` (S01 on opus: complete in 8% of a window; S03–S05 on the top model: about 27% each, unfinished). The
+runner therefore picks a model per session (default `opus`; the top model only for the hardest sessions; `sonnet`
+for mechanical ones), keeps context small (CLAUDE.md "Working efficiently") and runs up to 3 lanes on a dependency
+graph that also lets the M7–M10 project sessions run in parallel. Gates are unchanged for every model.
 
-**Duration.** 77 ÷ 2.5 ≈ **31 days** (range 26–39). Starting 24 Nov 2026, the target for v1.0.0 is
-**24 Dec 2026 – 1 Jan 2027**.
+**Duration.** 68 sessions left after S02, plus ~7 contingency. A simulation of the nightly schedule (3 lanes, the
+dependency graph, measured usage per model) gives 7–9 nights; with real-world friction (rebase conflicts, red CI,
+partial sessions, contingency) we plan for **about 11 nights** (range 8–14), i.e. v1.0.0 ready around **4 Dec 2026**
+(range 1–7 Dec). Release tags still wait for the owner's approval.
 
-**Projected milestone dates** (at 2.5 sessions/day, before contingency):
+**Projected milestone dates** (expected case, morning the night's run ends):
 
 | Milestone | Last session | Projected finish |
 | --- | --- | --- |
-| M0 Foundations | S04 | 25 Nov |
-| M1 Sim core | S09 | 27 Nov |
-| M2 Task suite | S16 | 30 Nov |
-| M3 Experts and demos | S22 | 2 Dec |
-| M4 Grader (v0.1.0) | S30 | 5 Dec |
-| M5 Dataset doctor | S35 | 7 Dec |
-| M6 Reference baselines | S40 | 9 Dec |
-| M7 Projects P0–P4 | S50 | 13 Dec |
-| M8 Projects P5–P7 | S57 | 16 Dec |
-| M9 Hardware path | S62 | 18 Dec |
-| M10 v1.0.0 | S70 | 21 Dec (24 Dec – 1 Jan with contingency) |
+| M0 Foundations | S04 | 24 Nov |
+| M1 Sim core | S09 | 25–26 Nov |
+| M2 Task suite | S16 | 27 Nov |
+| M3 Experts and demos | S22 | 27–28 Nov |
+| M4 Grader (v0.1.0) | S30 | 28–29 Nov |
+| M5 Dataset doctor | S35 | 28 Nov |
+| M6 Reference baselines | S40 | 29–30 Nov |
+| M7 Projects P0–P4 | S50 | 2 Dec |
+| M8 Projects P5–P7 | S57 | 3 Dec |
+| M9 Hardware path | S62 | 2–3 Dec |
+| M10 v1.0.0 | S70 | 4 Dec (1–7 Dec) |
 
 **Daily schedule (IST, Asia/Kolkata):**
 
 | Time (IST) | Run |
 | --- | --- |
-| 01:00 | Build session (window 01:00–06:00) |
-| 06:00 | Build session (window 06:00–11:00) |
-| 11:00 | Build session (window 11:00–16:00) |
-| 16:00 | Build session (window 16:00–21:00) |
-| 21:00 | Daily update to the owner (`/progress`, no build); 21:00–01:00 is left free for the owner's own Claude use |
+| 23:00–07:00 | Build lanes are topped up every 30 minutes; no new session starts after about 06:15 or when the 5-hour window is ≥ 85% used; everything stops and checkpoints at 07:00 |
+| 07:00–23:00 | Reserved for the owner's own Claude use; no builds |
+| 21:00 | Daily update to the owner (no build) |
 
-Usage windows roll from the first message, so the owner's own Claude use in the 21:00–01:00 gap can open a window
-that overlaps the 01:00 run; that run then simply stops earlier. This is accepted: the owner's work always comes first.
+If the owner uses Claude shortly before 23:00, that 5-hour window carries into the night and the first lanes stop
+earlier. This is accepted: the owner's work always comes first. "Pause" stops everything until the next night.
 
 **Runner rules** (implemented on the build machine, outside this repo):
-- One session per slot: `claude -p "/session" --permission-mode bypassPermissions` inside the repo, with a hard
-  wall-clock cap of 4 h 30 min and a lock file so runs never overlap.
+- One session per lane at a time: `claude -p "/session SNN" --model <per-session model> --permission-mode
+  bypassPermissions` inside the lane's clone, with a hard wall-clock cap of 4 h 30 min and a lock file per lane.
 - After every run (normal end, usage limit or timeout), the runner checks the working tree: uncommitted changes on a
-  `session/*` branch are scanned with gitleaks, committed as `chore(wip): <session> interrupted` and pushed to that
-  branch (never to `main`). The next run detects the branch and resumes (CLAUDE.md step 3).
+  `session/*` branch are scanned for secrets and with gitleaks, committed as `wip(<session>): runner checkpoint …`
+  and pushed to that branch (never to `main`). If a pre-commit hook rejects half-finished work, the checkpoint is
+  committed with hooks skipped on the session branch only and marked `(hooks skipped)`; the resuming session fixes
+  the findings first, and nothing merges until hooks, the gate and CI are green. The next run resumes the branch.
 - If a run reports a usage limit, the runner records it and does not retry; the next slot resumes.
 - If the weekly allowance is exhausted, remaining slots that week are skipped automatically until the reset.
 - If `main` is red or a blocker needs the owner, slots pause and the daily update asks for help.

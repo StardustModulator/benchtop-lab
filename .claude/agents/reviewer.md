@@ -27,5 +27,9 @@ Check, in this order:
    their absence is justified. Anything below the Distill.pub / top-university-lab bar, any WCAG AA failure, or
    any tracker/CDN font is **Must fix**. Include a short "UI checklist" section in your output for UI diffs.
 
+Work economically: start from `git diff main...HEAD --stat`, then read the diff file by file; read surrounding code
+only where a finding needs it, and read only the spec sections the session cites. You are called once per session,
+so make this pass complete: report every Must fix now rather than in a later round.
+
 Output: a list of findings grouped as **Must fix**, **Should fix**, **Nit**, each with file:line and a concrete
 suggestion, then a one-line verdict: `APPROVE` or `CHANGES REQUIRED`.

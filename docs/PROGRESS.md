@@ -13,7 +13,7 @@ Times are IST (Asia/Kolkata, UTC+5:30).
 | Sessions done | 2 / 70 (+ 0 contingency used of ~7) |
 | Percent complete | 2.9% |
 | Estimated sessions remaining | 68 |
-| Estimated days remaining | ~27 (68 sessions ÷ 2.5/day; ~30 with the ~7 contingency sessions) |
+| Estimated nights remaining | ~11 (68 sessions ÷ ~6 per night on the 23:00–07:00 IST schedule; range 8–14 incl. contingency) |
 | Last green `main` commit | S02 merge, PR #2 (see session log) |
 
 ## Milestones
