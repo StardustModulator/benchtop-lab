@@ -6,12 +6,13 @@ Subcommands (`doctor`, `grade`, `demo`, ...) arrive in later sessions; this modu
 and the global options.
 """
 
+import os
 from typing import Annotated
 
 import typer
 
 from benchtop_lab import __version__
-from benchtop_lab.console import make_console
+from benchtop_lab.console import configure_help_output, make_console
 
 __all__ = ["app", "main"]
 
@@ -51,4 +52,5 @@ def root(
 
 def main() -> None:
     """Entry point for the `benchtop` console script and `python -m benchtop_lab`."""
+    configure_help_output(os.environ)
     app(prog_name="benchtop")
