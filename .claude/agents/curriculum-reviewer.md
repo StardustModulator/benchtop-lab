@@ -19,5 +19,8 @@ Check:
 5. **Rubric**: thresholds use the Wilson lower bound; Pass/Merit/Distinction are distinct and achievable with the
    stated compute.
 6. **Accessibility and inclusivity**: alt text on images, no jargon walls, no assumptions about expensive hardware.
+7. **Presentation**: lesson pages, figures and report cards follow `.claude/skills/ui-excellence/SKILL.md`
+   (typography, measure, captions, honest charts with uncertainty, dark-mode-safe figures). Flag anything below the
+   Distill.pub / top-university-lab bar as Must fix.
 
 Output: **Must fix**, **Should fix**, **Nit** with file:line, then an estimated learner time and a verdict.

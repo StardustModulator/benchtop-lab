@@ -65,6 +65,15 @@ Template for each entry (newest first):
 - Usage: stopped early due to usage limit? yes/no
 -->
 
+### Owner rule · UI excellence — DONE
+- Date (IST): 2026-11-23
+- Done: standing rule that every UI is world-class, top-university-lab quality. Added the "UI excellence" section to
+  CLAUDE.md, the `ui-excellence` skill (fonts, type scale, measured WCAG AA colour tokens for light/dark, chart
+  palette, surface guidance, verification steps, review checklist), and UI checks in `reviewer`,
+  `curriculum-reviewer` and `/session`.
+- Next: S01 Monorepo skeleton and quality tooling.
+- Blockers: none.
+
 ### Phase 2 · Planning — DONE
 - Date (IST): 2026-11-23
 - Done: research, PLAN.md, ARCHITECTURE.md, MILESTONES.md, CLAUDE.md, `.claude/` agents/commands/skills, licenses,

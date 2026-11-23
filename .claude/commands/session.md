@@ -15,6 +15,8 @@ Follow the "Session protocol" in CLAUDE.md exactly. Concretely:
    Write a todo list mapping 1:1 to the session's Tasks and Acceptance. Commit and push after each completed task.
 4. Implement with tests. Keep scope tight. Use the `test-runner` subagent to run and triage the gate, and the
    `reviewer` subagent to review the full diff (`git diff main...HEAD`) before finishing. Fix every "must fix".
+   If the session touches any user interface (docs site, HTML reports, charts, CLI output, landing page), load the
+   `ui-excellence` skill first, follow its tokens and verification steps, and have `reviewer` apply its checklist.
 5. For milestone-final sessions, also ask `reviewer` to review the whole milestone; for lesson sessions, also run
    `curriculum-reviewer`.
 6. Update `docs/PROGRESS.md` (status table, milestone row, percent complete = planned sessions done / 70 (contingency
