@@ -53,3 +53,6 @@ Thumbs.db
 # Claude Code local files
 .claude/settings.local.json
 CLAUDE.local.md
+
+# MuJoCo appends its warnings to this file in the current directory
+MUJOCO_LOG.TXT

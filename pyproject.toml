@@ -99,6 +99,11 @@ warn_unreachable = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 pretty = true
 
+# MuJoCo ships no type information (no stubs, no py.typed); its objects are `Any` to mypy.
+[[tool.mypy.overrides]]
+module = ["mujoco", "mujoco.*"]
+ignore_missing_imports = true
+
 # ---------------------------------------------------------------------------------------------------------------
 # pytest and coverage.
 # ---------------------------------------------------------------------------------------------------------------

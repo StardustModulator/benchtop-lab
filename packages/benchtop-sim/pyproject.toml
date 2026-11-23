@@ -25,7 +25,10 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Typing :: Typed",
 ]
-dependencies = []
+dependencies = [
+    "mujoco>=4.0,<4.1",
+    "numpy>=2.1",
+]
 
 [project.urls]
 Homepage = "https://github.com/StardustModulator/benchtop-lab"

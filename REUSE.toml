@@ -18,3 +18,11 @@ path = ["**/*.md", "**/*.ipynb", "docs/**", "projects/**/lesson/**", "NOTICE"]
 precedence = "closest"
 SPDX-FileCopyrightText = "2026 Benchtop Lab contributors"
 SPDX-License-Identifier = "CC-BY-4.0"
+
+# Vendored, unmodified: MuJoCo Menagerie's SO-101 model (see UPSTREAM.md next to it, and NOTICE). Listed last so
+# it wins over the Markdown rule above for upstream's README and CHANGELOG; our UPSTREAM.md carries its own header.
+[[annotations]]
+path = "packages/benchtop-sim/src/benchtop_sim/assets/robotstudio_so101/**"
+precedence = "closest"
+SPDX-FileCopyrightText = "TheRobotStudio and The MuJoCo Menagerie Authors"
+SPDX-License-Identifier = "Apache-2.0"
