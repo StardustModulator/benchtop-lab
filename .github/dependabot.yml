@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: 2026 Benchtop Lab contributors
+# SPDX-License-Identifier: Apache-2.0
+#
+# Weekly, grouped update pull requests: one for GitHub Actions (keeps the pinned SHAs current) and one for the
+# uv lockfile. Every update goes through CI like any other change; nothing merges automatically.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directories:
+      - /
+      - /.github/actions/setup
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Asia/Kolkata
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: ci
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Asia/Kolkata
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      python-minor-and-patch:
+        update-types: [minor, patch]

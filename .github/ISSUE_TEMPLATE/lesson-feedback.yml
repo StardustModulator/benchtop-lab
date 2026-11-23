@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2026 Benchtop Lab contributors
+# SPDX-License-Identifier: Apache-2.0
+name: Lesson feedback
+description: A lesson step was confusing, wrong, out of date or missing something.
+title: "lesson: "
+labels: [documentation]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If a step confused you, it will confuse the next learner too. Telling us exactly where you got stuck
+        is one of the most useful contributions there is. No prior experience needed.
+  - type: input
+    id: where
+    attributes:
+      label: Project and section
+      description: The project and the heading you were reading, or a link to the page.
+      placeholder: "P3 Your first policy → Predict, run, explain"
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of problem is it?
+      options:
+        - A step did not work as written
+        - An explanation was unclear or a term was not defined
+        - Something is factually wrong or out of date
+        - Something is missing
+        - Typo or formatting
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What happened?
+      description: What you were trying to do, what the lesson said, and what you saw. Paste commands and output as text.
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: What would have helped?
+      description: Optional. A sentence, an example or a picture that would have made it clear.

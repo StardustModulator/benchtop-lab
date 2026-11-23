@@ -12,7 +12,8 @@ By participating you agree to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 | --- | --- |
 | Report a bug | Open an issue with the **Bug** template. Include `benchtop doctor --json` output. |
 | Say a lesson was confusing | Open an issue with the **Lesson feedback** template, naming the project and section. |
-| Propose a new task, project or clinic case | Open a **Discussion** (Ideas) first; we agree on scope before code. |
+| Propose a new task, project or clinic case | Open an issue with the **Task proposal** template first; we agree on scope before code. |
+| Report a security problem | Do not open an issue. Follow [SECURITY.md](SECURITY.md) to report it privately. |
 | Fix something small | Send a pull request directly. |
 | Share your report card | Post it in Discussions → Show and tell, or open a PR adding it to the gallery page. |
 
@@ -32,7 +33,18 @@ uv run pytest -q
 ```
 
 > `make setup` runs the first two commands, `make gate` runs ruff, mypy, import-linter and the tests, and
-> `make help` lists every target.
+> `make help` lists every target. `make` is optional: every target is a thin wrapper over the `uv run` commands.
+
+## Continuous integration
+
+Every pull request runs the same gate on GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)):
+ruff, import-linter, file hygiene and `actionlint`, `mypy --strict`, the tests on Python 3.12 and 3.13 with the
+85% coverage gate, the `slow` and `render` suites, `reuse lint`, and a `gitleaks` scan of the whole history. A pull
+request merges only when the **CI passed** check is green. A nightly workflow repeats the tests on Linux and macOS.
+
+If you edit a workflow: pin every action to a full commit SHA with the version in a trailing comment
+(`uses: owner/action@<40-character sha> # v1.2.3`), keep `permissions:` read-only unless a job truly needs more, and
+run `uv run pre-commit run actionlint --all-files`. `tests/test_ci_config.py` checks these rules.
 
 ## Pull request checklist
 

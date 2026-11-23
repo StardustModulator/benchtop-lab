@@ -1,0 +1,167 @@
+# SPDX-FileCopyrightText: 2026 Benchtop Lab contributors
+# SPDX-License-Identifier: Apache-2.0
+#
+# The gate from CLAUDE.md, on every pull request and every push to main (ADR-008).
+# Rules for this file (checked by tests/test_ci_config.py): actions are pinned to full commit SHAs, the
+# default token is read-only, checkouts do not persist credentials, and every job has a timeout.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  FORCE_COLOR: "1"
+  UV_NO_PROGRESS: "1"
+
+jobs:
+  lint:
+    name: Lint (ruff, import-linter, hooks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+        with:
+          torch: none
+      - name: Ruff lint, ruff format check and import contracts
+        run: make lint
+      - name: Cache pre-commit hook environments
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
+      - name: File hygiene and actionlint
+        run: make hooks
+
+  typecheck:
+    name: Typecheck (mypy strict)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: mypy --strict
+        run: make type
+
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Fast tests with the coverage gate (85%)
+        run: make test
+
+  slow:
+    name: Slow tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Tests marked slow
+        run: make test-slow
+
+  render:
+    name: Render tests (EGL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MUJOCO_GL: egl
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install offscreen OpenGL (EGL, with OSMesa as the fallback)
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libegl1 libegl-mesa0 libgl1-mesa-dri libosmesa6
+      - uses: ./.github/actions/setup
+      - name: Tests marked render
+        run: make test-render
+
+  reuse:
+    name: REUSE licensing
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # REUSE is GPL-3.0-or-later, so it runs as an isolated tool and never enters uv.lock (ADR-010).
+      - name: Install uv
+        uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          version: "0.13.8"
+          enable-cache: false
+      - name: reuse lint
+        run: make reuse
+
+  gitleaks:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GITLEAKS_VERSION: "8.30.1"
+      GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # scan the whole history, not only the tip
+          persist-credentials: false
+      - name: Install gitleaks (checksum verified)
+        run: |
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl --fail --silent --show-error --location --retry 3 --output "$RUNNER_TEMP/$archive" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/$archive"
+          echo "${GITLEAKS_SHA256}  $RUNNER_TEMP/$archive" | sha256sum --check --strict
+          mkdir -p "$RUNNER_TEMP/gitleaks"
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP/gitleaks" gitleaks
+      - name: Scan the git history
+        run: |
+          "$RUNNER_TEMP/gitleaks/gitleaks" git --redact --no-banner --verbose .
+
+  # One stable check for branch protection to require: green only when every job above succeeded.
+  ci-ok:
+    name: CI passed
+    if: always()
+    needs: [lint, typecheck, test, slow, render, reuse, gitleaks]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Every required job succeeded
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "Job results: $RESULTS"
+          for result in $RESULTS; do
+            if [ "$result" != "success" ]; then
+              echo "::error::A required job finished with '$result'. Open the failing job above for details."
+              exit 1
+            fi
+          done
