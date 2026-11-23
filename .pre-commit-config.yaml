@@ -45,6 +45,12 @@ repos:
         types_or: [python, toml]
         pass_filenames: false
 
+  # Lints .github/workflows (expressions, job graph, and embedded shell through shellcheck when it is on PATH).
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
+
   # REUSE (GPL-3.0-or-later) runs only as an isolated external tool, never as a project dependency (ADR-010).
   - repo: https://github.com/fsfe/reuse-tool
     rev: v6.3.0

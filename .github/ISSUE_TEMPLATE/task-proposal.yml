@@ -1,0 +1,55 @@
+# SPDX-FileCopyrightText: 2026 Benchtop Lab contributors
+# SPDX-License-Identifier: Apache-2.0
+name: Task proposal
+description: Propose a new simulated task, project or debugging-clinic case. We agree on scope before any code.
+title: "proposal: "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        New tasks are graded on held-out scenes, so each one needs a success condition that a program can
+        check. A short, concrete proposal is better than a long one.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What are you proposing?
+      options:
+        - A simulated task for the SO-101
+        - A project (lesson, starter kit and rubric)
+        - A debugging-clinic case
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: learning-goal
+    attributes:
+      label: What should a learner be able to do afterwards?
+      description: One or two sentences. This is the reason the task exists.
+    validations:
+      required: true
+  - type: textarea
+    id: scene
+    attributes:
+      label: Scene and success condition
+      description: >-
+        The objects on the table, what the arm must achieve, and how success is measured (for example
+        "cube centre within 2 cm of the target for 10 consecutive steps").
+    validations:
+      required: true
+  - type: textarea
+    id: cheats
+    attributes:
+      label: How could a policy pass without really solving it?
+      description: Shortcuts you can think of (pushing instead of lifting, knocking the target over). These become adversarial tests.
+  - type: textarea
+    id: assets
+    attributes:
+      label: Assets and licences
+      description: Any meshes, textures or datasets it needs, with their source and licence. Only permissively licensed assets can be included.
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Taking part
+      options:
+        - label: I would like to help build this.

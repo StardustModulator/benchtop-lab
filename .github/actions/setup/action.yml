@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2026 Benchtop Lab contributors
+# SPDX-License-Identifier: Apache-2.0
+#
+# Shared setup for every CI job: a pinned uv with its cache, the requested Python, and the locked workspace.
+# The caller checks the repository out first (a local action only exists after checkout).
+name: Set up the Benchtop Lab workspace
+description: Install a pinned uv (with cache), select a Python version and sync the locked workspace.
+
+inputs:
+  python-version:
+    description: Python version to run on.
+    required: false
+    default: "3.12"
+  torch:
+    description: >-
+      PyTorch flavour to install through the benchtop-core extra: "cpu" (PLAN §11) or "none" for jobs that
+      only run linters.
+    required: false
+    default: cpu
+
+runs:
+  using: composite
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+      with:
+        version: "0.13.8"
+        python-version: ${{ inputs.python-version }}
+        enable-cache: true
+        cache-dependency-glob: uv.lock
+        cache-suffix: torch-${{ inputs.torch }}
+
+    - name: Sync the workspace from uv.lock
+      shell: bash
+      env:
+        TORCH_FLAVOUR: ${{ inputs.torch }}
+      run: |
+        extra=()
+        case "$TORCH_FLAVOUR" in
+          cpu) extra=(--extra cpu) ;;
+          none) ;;
+          *) echo "::error::Unknown torch flavour '$TORCH_FLAVOUR'. Use 'cpu' or 'none'."; exit 2 ;;
+        esac
+        uv sync --locked --all-packages --all-groups "${extra[@]}"

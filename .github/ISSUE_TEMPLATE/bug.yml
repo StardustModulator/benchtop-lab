@@ -1,0 +1,69 @@
+# SPDX-FileCopyrightText: 2026 Benchtop Lab contributors
+# SPDX-License-Identifier: Apache-2.0
+name: Bug report
+description: Something in Benchtop Lab crashes, gives a wrong result or behaves differently from the docs.
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report this. A report we can reproduce usually gets fixed quickly, so
+        the exact command and the full error message matter most.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you saw, and what you expected to see instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: The exact commands, starting from a fresh terminal. Include the seed if a simulation is involved.
+      placeholder: |
+        1. uv run benchtop ...
+        2. ...
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Error message or output
+      description: Paste the full text (not a screenshot). Remove any tokens or personal paths first.
+      render: text
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: >-
+        Paste the output of `uv run benchtop doctor --json`. If that command is not available yet, give
+        `uv run benchtop --version`, your operating system and your Python version.
+      render: json
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Simulation and tasks
+        - Grader and report cards
+        - Dataset doctor
+        - LeRobot compatibility
+        - Real SO-101 hardware
+        - CLI or installation
+        - Not sure
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and did not find this one.
+          required: true
+        - label: The text above contains no tokens, keys or other secrets.
+          required: true

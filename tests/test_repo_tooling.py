@@ -13,7 +13,9 @@ PYPROJECT = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
 MARKERS = ("slow", "render", "network", "gpu", "hardware")
 
 
-@pytest.mark.parametrize("target", ["setup", "lint", "type", "test", "test-all", "docs"])
+@pytest.mark.parametrize(
+    "target", ["setup", "lint", "type", "test", "test-slow", "test-render", "test-all", "hooks", "docs"]
+)
 def test_makefile_has_required_target(target: str) -> None:
     makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
     assert re.search(rf"^{re.escape(target)}:", makefile, flags=re.MULTILINE)

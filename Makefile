@@ -4,7 +4,7 @@
 # Convenience targets. Each one is a thin wrapper over the commands in CLAUDE.md "The gate".
 
 .DEFAULT_GOAL := help
-.PHONY: help setup lint format type test test-all docs reuse gate
+.PHONY: help setup lint format type test test-slow test-render test-all hooks docs reuse gate
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  %-10s %s\n", $$1, $$2}'
@@ -29,9 +29,17 @@ test: ## Fast tests with the coverage gate (excludes slow, render, network, gpu,
 	uv run pytest -q --cov --cov-fail-under=85
 
 # pytest exits with 5 when a marker selects no tests (true until the sim lands); that is not a failure here.
-test-all: test ## Fast tests plus the slow and render suites
+test-slow: ## Slow suite (LeRobot training/eval, long simulations)
 	uv run pytest -q -m "slow" || [ $$? -eq 5 ]
+
+test-render: ## Render suite (needs offscreen OpenGL; MUJOCO_GL defaults to egl)
 	MUJOCO_GL=$${MUJOCO_GL:-egl} uv run pytest -q -m "render" || [ $$? -eq 5 ]
+
+test-all: test test-slow test-render ## Fast tests plus the slow and render suites
+
+# The hooks skipped here have their own targets and CI jobs; gitleaks's hook only scans staged changes.
+hooks: ## File hygiene and workflow lint (pre-commit hooks not covered by lint, type or reuse)
+	SKIP=ruff-check,ruff-format,mypy,lint-imports,reuse,gitleaks uv run pre-commit run --all-files --show-diff-on-failure
 
 reuse: ## REUSE licensing check (isolated external tool, ADR-010)
 	uvx --from 'reuse[charset-normalizer]==6.3.0' reuse lint

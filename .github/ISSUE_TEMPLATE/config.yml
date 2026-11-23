@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2026 Benchtop Lab contributors
+# SPDX-License-Identifier: Apache-2.0
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/StardustModulator/benchtop-lab/security/advisories/new
+    about: Please report vulnerabilities privately, not in a public issue. See SECURITY.md.
+  - name: Question about LeRobot itself
+    url: https://github.com/huggingface/lerobot/issues
+    about: Problems with lerobot-train, lerobot-record or LeRobot datasets outside Benchtop Lab belong upstream.
