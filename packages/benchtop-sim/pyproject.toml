@@ -1,0 +1,39 @@
+# SPDX-FileCopyrightText: 2026 Benchtop Lab contributors
+# SPDX-License-Identifier: Apache-2.0
+
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "benchtop-sim"
+dynamic = ["version"]
+description = "MuJoCo tasks, scenes, success checks, perturbations and scripted experts for the SO-101 arm."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "Benchtop Lab contributors" }]
+keywords = ["robotics", "mujoco", "simulation"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/StardustModulator/benchtop-lab"
+Source = "https://github.com/StardustModulator/benchtop-lab/tree/main/packages/benchtop-sim"
+Issues = "https://github.com/StardustModulator/benchtop-lab/issues"
+
+[tool.hatch.version]
+path = "src/benchtop_sim/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/benchtop_sim"]

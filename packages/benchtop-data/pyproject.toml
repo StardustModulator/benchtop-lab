@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: 2026 Benchtop Lab contributors
+# SPDX-License-Identifier: Apache-2.0
+
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "benchtop-data"
+dynamic = ["version"]
+description = "Dataset doctor: read-only quality checks for LeRobot datasets."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "Benchtop Lab contributors" }]
+keywords = ["robotics", "datasets"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
+]
+dependencies = [
+    "benchtop-core",
+]
+
+[project.urls]
+Homepage = "https://github.com/StardustModulator/benchtop-lab"
+Source = "https://github.com/StardustModulator/benchtop-lab/tree/main/packages/benchtop-data"
+Issues = "https://github.com/StardustModulator/benchtop-lab/issues"
+
+[tool.hatch.version]
+path = "src/benchtop_data/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/benchtop_data"]

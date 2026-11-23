@@ -1,0 +1,203 @@
+# SPDX-FileCopyrightText: 2026 Benchtop Lab contributors
+# SPDX-License-Identifier: Apache-2.0
+#
+# Benchtop Lab uv workspace root (ADR-004). The root itself is not a package; the six members live in packages/.
+
+[project]
+name = "benchtop-lab-workspace"
+version = "0.1.0.dev0"
+description = "Workspace root for the Benchtop Lab monorepo (not published)."
+requires-python = ">=3.12"
+license = "Apache-2.0"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.100",
+    "import-linter>=2.1",
+    "mypy>=1.13",
+    "pre-commit>=4.0",
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "pytest-xdist>=3.6",
+    "ruff>=0.8",
+]
+
+[tool.uv]
+package = false
+# PyTorch wheels (PLAN §11): `benchtop-core[cpu]` and `benchtop-core[cu]` select an index and are mutually exclusive.
+conflicts = [[{ package = "benchtop-core", extra = "cpu" }, { package = "benchtop-core", extra = "cu" }]]
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+benchtop-core = { workspace = true }
+benchtop-sim = { workspace = true }
+benchtop-grade = { workspace = true }
+benchtop-data = { workspace = true }
+benchtop-real = { workspace = true }
+benchtop-lab = { workspace = true }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+# ---------------------------------------------------------------------------------------------------------------
+# Ruff: lint + format, line length 110.
+# ---------------------------------------------------------------------------------------------------------------
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+src = ["packages/*/src", "packages/*/tests", "tests"]
+extend-exclude = ["envhub"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F", "I", "N", "UP", "B", "A", "C4", "SIM", "RUF", "PT", "PTH", "TID", "TC", "D", "ANN", "S",
+    "BLE", "ERA", "PL", "NPY",
+]
+ignore = [
+    "D105", "D107",   # magic methods / __init__ documented on the class
+    "PLR0913",        # many-argument functions are fine for typed configs
+    "S603",           # subprocess calls without shell are reviewed case by case
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S101", "D", "PLR2004", "ANN401"]
+"tools/**" = ["D"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.format]
+docstring-code-format = true
+
+# ---------------------------------------------------------------------------------------------------------------
+# mypy: strict on everything we own.
+# ---------------------------------------------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["packages/*/src", "packages/*/tests", "tests"]
+warn_unreachable = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+pretty = true
+
+# ---------------------------------------------------------------------------------------------------------------
+# pytest and coverage.
+# ---------------------------------------------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "8.3"
+testpaths = ["packages", "tests"]
+addopts = [
+    "--import-mode=importlib",
+    "--strict-markers",
+    "--strict-config",
+    "-ra",
+    "-m", "not slow and not render and not network and not gpu and not hardware",
+]
+markers = [
+    "slow: takes more than 5 s or uses LeRobot training/eval (run with -m slow)",
+    "render: needs an offscreen OpenGL context, MUJOCO_GL=egl or osmesa (run with -m render)",
+    "network: touches the network, e.g. the Hugging Face Hub (run with -m network)",
+    "gpu: needs a CUDA or MPS device (run with -m gpu)",
+    "hardware: talks to a real SO-101 arm; never runs in CI (run with -m hardware)",
+]
+xfail_strict = true
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+branch = true
+source = ["benchtop_core", "benchtop_sim", "benchtop_grade", "benchtop_data", "benchtop_real", "benchtop_lab"]
+# Hardware I/O modules are excluded from the coverage target (CLAUDE.md); add them here as they appear.
+omit = []
+
+[tool.coverage.report]
+fail_under = 85
+show_missing = true
+skip_covered = true
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "@overload",
+]
+
+# ---------------------------------------------------------------------------------------------------------------
+# import-linter: dependency rules from ARCHITECTURE §2 (ADR-004, ADR-007).
+# ---------------------------------------------------------------------------------------------------------------
+[tool.importlinter]
+root_packages = [
+    "benchtop_core",
+    "benchtop_sim",
+    "benchtop_grade",
+    "benchtop_data",
+    "benchtop_real",
+    "benchtop_lab",
+]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+id = "layers"
+name = "Package layers: CLI -> tools -> core/sim"
+type = "layers"
+layers = [
+    "benchtop_lab",
+    "benchtop_grade | benchtop_data | benchtop_real",
+    "benchtop_core | benchtop_sim",
+]
+
+[[tool.importlinter.contracts]]
+id = "sim-standalone"
+name = "benchtop_sim imports no other Benchtop package and no lerobot/torch"
+type = "forbidden"
+source_modules = ["benchtop_sim"]
+forbidden_modules = [
+    "benchtop_core",
+    "benchtop_grade",
+    "benchtop_data",
+    "benchtop_real",
+    "benchtop_lab",
+    "lerobot",
+    "torch",
+]
+
+[[tool.importlinter.contracts]]
+id = "data-core-only"
+name = "benchtop_data depends only on benchtop_core"
+type = "forbidden"
+source_modules = ["benchtop_data"]
+forbidden_modules = ["benchtop_sim", "benchtop_grade", "benchtop_real", "benchtop_lab"]
+
+[[tool.importlinter.contracts]]
+id = "lerobot-boundary"
+name = "Only benchtop_core.compat and benchtop_core.policies import lerobot or torch"
+type = "forbidden"
+source_modules = [
+    "benchtop_core",
+    "benchtop_grade",
+    "benchtop_data",
+    "benchtop_real",
+    "benchtop_lab",
+]
+forbidden_modules = ["lerobot", "torch"]
+ignore_imports = [
+    "benchtop_core.compat -> lerobot",
+    "benchtop_core.compat -> torch",
+    "benchtop_core.policies -> lerobot",
+    "benchtop_core.policies -> torch",
+    "benchtop_core.compat.** -> lerobot",
+    "benchtop_core.compat.** -> torch",
+    "benchtop_core.policies.** -> lerobot",
+    "benchtop_core.policies.** -> torch",
+]
+unmatched_ignore_imports_alerting = "none"
