@@ -26,6 +26,9 @@ concurrency:
 env:
   FORCE_COLOR: "1"
   UV_NO_PROGRESS: "1"
+  # The setup action syncs once with the CPU PyTorch wheels. Without this, every `uv run` would re-sync to the
+  # default (no extra) and swap in PyPI's multi-gigabyte CUDA wheels.
+  UV_NO_SYNC: "1"
 
 jobs:
   platform:

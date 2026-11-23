@@ -22,6 +22,9 @@ concurrency:
 env:
   FORCE_COLOR: "1"
   UV_NO_PROGRESS: "1"
+  # The setup action syncs once with the CPU PyTorch wheels. Without this, every `uv run` would re-sync to the
+  # default (no extra) and swap in PyPI's multi-gigabyte CUDA wheels.
+  UV_NO_SYNC: "1"
 
 jobs:
   lint:
@@ -33,8 +36,6 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-        with:
-          torch: none
       - name: Ruff lint, ruff format check and import contracts
         run: make lint
       - name: Cache pre-commit hook environments

@@ -25,7 +25,14 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Typing :: Typed",
 ]
-dependencies = []
+dependencies = [
+    # The one LeRobot pin of the monorepo (PLAN §2). `dataset` brings the LeRobotDataset v3 reader/writer.
+    "lerobot[dataset]==0.7.*",
+    "numpy>=2.0",
+    "packaging>=24.2",
+    "psutil>=6.0",
+    "pydantic>=2.9",
+]
 
 [project.urls]
 Homepage = "https://github.com/StardustModulator/benchtop-lab"
@@ -34,11 +41,17 @@ Issues = "https://github.com/StardustModulator/benchtop-lab/issues"
 
 [project.optional-dependencies]
 # PyTorch wheel flavour (PLAN §11). Pick at most one: `uv sync --extra cpu` or `uv sync --extra cu`.
-cpu = ["torch>=2.7"]
-cu = ["torch>=2.7"]
+# One torch range for both flavours, inside LeRobot 0.7's `torch>=2.7,<2.16` (CPU index: 2.15, cu126: 2.14).
+# torchvision must come from the same index as torch (its compiled ops link against that torch build).
+cpu = ["torch>=2.14,<2.16", "torchvision>=0.28,<0.30"]
+cu = ["torch>=2.14,<2.16", "torchvision>=0.28,<0.30"]
 
 [tool.uv.sources]
 torch = [
+    { index = "pytorch-cpu", extra = "cpu" },
+    { index = "pytorch-cu126", extra = "cu" },
+]
+torchvision = [
     { index = "pytorch-cpu", extra = "cpu" },
     { index = "pytorch-cu126", extra = "cu" },
 ]

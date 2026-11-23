@@ -31,6 +31,7 @@ dependencies = [
     "benchtop-grade",
     "benchtop-data",
     "benchtop-real",
+    "mujoco>=4.0,<5",
     "rich>=13.9",
     "typer>=0.15",
 ]
