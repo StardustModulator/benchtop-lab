@@ -1,0 +1,977 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Benchtop Lab contributors
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Maps the Benchtop Lab design tokens (tokens.css) onto Material for MkDocs. No colour, size or font is
+ * defined here: every value is a token. Material uses a 20 px root font size, tokens assume 16 px, so sizes
+ * are multiplied by --rem (16 / 20).
+ */
+
+/* ---------------------------------------------------------------------------------------------------------
+ * 1. Root: one type scale at every viewport width (Material enlarges the root on very wide screens).
+ * ------------------------------------------------------------------------------------------------------- */
+html {
+  font-size: 125%;
+  scroll-padding-top: var(--space-8);
+}
+
+:root {
+  --rem: 0.8;
+  --md-text-font: var(--font-sans);
+  --md-code-font: var(--font-mono);
+  --md-text-font-family: var(--font-sans);
+  --md-code-font-family: var(--font-mono);
+}
+
+/* ---------------------------------------------------------------------------------------------------------
+ * 2. Colour: the same mapping for both schemes; the token values change with the scheme.
+ * ------------------------------------------------------------------------------------------------------- */
+:root,
+[data-md-color-scheme="default"],
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: var(--color-bg);
+  --md-default-bg-color--light: var(--color-surface);
+  --md-default-bg-color--lighter: var(--color-surface);
+  --md-default-bg-color--lightest: var(--color-surface-raised);
+  --md-default-fg-color: var(--color-text);
+  --md-default-fg-color--light: var(--color-text-muted);
+  --md-default-fg-color--lighter: var(--color-border-strong);
+  --md-default-fg-color--lightest: var(--color-border);
+
+  --md-primary-fg-color: var(--color-bg);
+  --md-primary-fg-color--light: var(--color-surface);
+  --md-primary-fg-color--dark: var(--color-surface);
+  --md-primary-bg-color: var(--color-text);
+  --md-primary-bg-color--light: var(--color-text-muted);
+
+  --md-accent-fg-color: var(--color-accent);
+  --md-accent-fg-color--transparent: color-mix(in srgb, var(--color-accent) var(--tint-strength), transparent);
+  --md-accent-bg-color: var(--color-on-accent);
+  --md-accent-bg-color--light: var(--color-on-accent);
+
+  --md-typeset-color: var(--color-text);
+  --md-typeset-a-color: var(--color-link);
+  --md-typeset-mark-color: color-mix(in srgb, var(--color-warning) 28%, transparent);
+  --md-typeset-del-color: color-mix(in srgb, var(--color-danger) var(--tint-strength), transparent);
+  --md-typeset-ins-color: color-mix(in srgb, var(--color-success) var(--tint-strength), transparent);
+  --md-typeset-kbd-color: var(--color-surface-raised);
+  --md-typeset-kbd-accent-color: var(--color-surface-raised);
+  --md-typeset-kbd-border-color: var(--color-border-strong);
+  --md-typeset-table-color: var(--color-border);
+  --md-typeset-table-color--light: var(--color-surface);
+
+  --md-code-fg-color: var(--color-text);
+  --md-code-bg-color: var(--color-surface);
+  --md-code-bg-color--light: var(--color-surface);
+  --md-code-bg-color--lighter: var(--color-surface);
+  --md-code-hl-color: var(--color-accent);
+  --md-code-hl-color--light: color-mix(in srgb, var(--color-accent) var(--tint-strength), transparent);
+  --md-code-hl-comment-color: var(--color-text-subtle);
+  --md-code-hl-keyword-color: var(--color-accent);
+  --md-code-hl-string-color: var(--color-success);
+  --md-code-hl-number-color: var(--color-danger);
+  --md-code-hl-constant-color: var(--color-distinction);
+  --md-code-hl-function-color: var(--color-distinction);
+  --md-code-hl-special-color: var(--color-warning);
+  --md-code-hl-name-color: var(--color-text);
+  --md-code-hl-variable-color: var(--color-text);
+  --md-code-hl-generic-color: var(--color-text-muted);
+  --md-code-hl-operator-color: var(--color-text-muted);
+  --md-code-hl-punctuation-color: var(--color-text-muted);
+
+  --md-admonition-fg-color: var(--color-text);
+  --md-admonition-bg-color: var(--color-bg);
+  --md-warning-fg-color: var(--color-text);
+  --md-warning-bg-color: color-mix(in srgb, var(--color-warning) var(--tint-strength), var(--color-bg));
+
+  --md-footer-bg-color: var(--color-surface);
+  --md-footer-bg-color--dark: var(--color-surface);
+  --md-footer-fg-color: var(--color-text);
+  --md-footer-fg-color--light: var(--color-text-muted);
+  --md-footer-fg-color--lighter: var(--color-text-muted);
+
+  --md-shadow-z1: none;
+  --md-shadow-z2: var(--shadow-raised);
+  --md-shadow-z3: var(--shadow-raised);
+
+  --md-mermaid-font-family: var(--font-sans);
+  --md-mermaid-edge-color: var(--color-border-strong);
+  --md-mermaid-node-bg-color: var(--color-surface);
+  --md-mermaid-node-fg-color: var(--color-border-strong);
+  --md-mermaid-label-bg-color: var(--color-bg);
+  --md-mermaid-label-fg-color: var(--color-text);
+  --md-mermaid-sequence-actor-bg-color: var(--color-surface);
+  --md-mermaid-sequence-actor-fg-color: var(--color-text);
+  --md-mermaid-sequence-actor-border-color: var(--color-border-strong);
+  --md-mermaid-sequence-actor-line-color: var(--color-border-strong);
+  --md-mermaid-sequence-message-line-color: var(--color-border-strong);
+  --md-mermaid-sequence-note-bg-color: var(--color-surface-raised);
+  --md-mermaid-sequence-note-border-color: var(--color-border-strong);
+}
+
+/* ---------------------------------------------------------------------------------------------------------
+ * 3. Page chrome: header, tabs, sidebars, search, footer. Borders before shadows.
+ * ------------------------------------------------------------------------------------------------------- */
+body {
+  font-feature-settings: "kern", "calt";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.md-grid {
+  max-width: var(--width-page);
+}
+
+.md-header {
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: none;
+}
+
+.md-header--shadow {
+  box-shadow: none;
+}
+
+.md-header__title {
+  font-size: calc(var(--fs-body) * var(--rem));
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.md-header__button.md-logo :is(img, svg) {
+  height: calc(var(--space-5) * var(--rem) * 1.25);
+  width: auto;
+}
+
+.md-tabs {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.md-tabs__link {
+  font-size: calc(var(--fs-small) * var(--rem));
+  font-weight: 500;
+  opacity: 1;
+  color: var(--color-text-muted);
+}
+
+.md-tabs__item--active .md-tabs__link,
+.md-tabs__link:is(:hover, :focus-visible) {
+  color: var(--color-text);
+}
+
+.md-tabs__item--active .md-tabs__link {
+  font-weight: 650;
+  box-shadow: inset 0 -2px 0 var(--color-accent);
+}
+
+.md-tabs__item {
+  height: auto;
+}
+
+.md-tabs__link {
+  margin-top: 0;
+  padding-block: calc(var(--space-3) * var(--rem));
+}
+
+.md-nav {
+  font-size: calc(var(--fs-small) * var(--rem));
+  line-height: var(--lh-ui);
+}
+
+.md-nav__title {
+  color: var(--color-text);
+  font-weight: 650;
+}
+
+.md-nav__link {
+  color: var(--color-text-muted);
+}
+
+.md-nav__item--section > .md-nav__link,
+.md-nav__item--section > .md-nav__link[for] {
+  color: var(--color-text);
+  font-size: calc(var(--fs-micro) * var(--rem));
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.md-nav__link:is(:hover, :focus-visible),
+.md-nav__link--active,
+.md-nav__item .md-nav__link--active {
+  color: var(--color-link);
+}
+
+.md-nav__link--active {
+  font-weight: 600;
+}
+
+.md-search__form {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+}
+
+.md-search__form:hover {
+  background-color: var(--color-surface-raised);
+}
+
+.md-search__input {
+  color: var(--color-text);
+  font-size: calc(var(--fs-small) * var(--rem));
+}
+
+.md-search__input::placeholder,
+.md-search__input + .md-search__icon {
+  color: var(--color-text-muted);
+}
+
+.md-search__output,
+.md-search__scrollwrap {
+  background-color: var(--color-surface-raised);
+}
+
+.md-search-result__meta {
+  background-color: var(--color-surface);
+  color: var(--color-text-muted);
+}
+
+.md-search-result mark {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.md-source {
+  font-size: calc(var(--fs-small) * var(--rem));
+}
+
+.md-path {
+  font-size: calc(var(--fs-small) * var(--rem));
+}
+
+.md-path__link {
+  color: var(--color-text-muted);
+}
+
+.md-footer {
+  border-top: 1px solid var(--color-border);
+}
+
+.md-footer__link {
+  opacity: 1;
+}
+
+.md-footer__direction {
+  color: var(--color-text-muted);
+  font-size: calc(var(--fs-micro) * var(--rem));
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  opacity: 1;
+  text-transform: uppercase;
+}
+
+.md-footer-meta {
+  border-top: 1px solid var(--color-border);
+}
+
+.md-copyright {
+  color: var(--color-text-muted);
+  font-size: calc(var(--fs-small) * var(--rem));
+  line-height: var(--lh-ui);
+}
+
+.md-copyright__highlight {
+  color: var(--color-text-muted);
+}
+
+html .md-footer-meta.md-typeset a {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+html .md-footer-meta.md-typeset a:is(:hover, :focus-visible) {
+  color: var(--color-link);
+}
+
+.md-top {
+  background-color: var(--color-surface-raised);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: calc(var(--fs-small) * var(--rem));
+}
+
+/* ---------------------------------------------------------------------------------------------------------
+ * 4. Prose. Serif body at 17 px, sans headings, 68ch measure; tables, code and figures may run wider.
+ * ------------------------------------------------------------------------------------------------------- */
+.md-typeset {
+  color: var(--color-text);
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  font-size: calc(var(--fs-body) * var(--rem));
+  line-height: var(--lh-prose);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.md-typeset > :is(p, ul, ol, dl, blockquote, hr, h1, h2, h3, h4, h5, h6, .admonition, details, .footnote),
+.md-typeset .doc-contents > :is(p, ul, ol, dl, blockquote, .admonition, details) {
+  max-width: var(--measure);
+}
+
+.md-typeset :is(p, li, dd, blockquote) {
+  hanging-punctuation: first;
+  text-wrap: pretty;
+}
+
+.md-typeset > :is(p, ul, ol, dl, blockquote) {
+  hyphens: auto;
+}
+
+.md-typeset :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  hyphens: manual;
+  text-wrap: balance;
+}
+
+.md-typeset h1 {
+  font-size: clamp(calc(var(--fs-h2) * var(--rem)), 1.1rem + 3vw, calc(var(--fs-h1) * var(--rem)));
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: var(--lh-h1);
+  margin: 0 0 calc(var(--space-5) * var(--rem));
+}
+
+.md-typeset h2 {
+  font-size: clamp(calc(var(--fs-h3) * var(--rem)), 1rem + 2vw, calc(var(--fs-h2) * var(--rem)));
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: var(--lh-h2);
+  margin: calc(var(--space-7) * var(--rem)) 0 calc(var(--space-4) * var(--rem));
+}
+
+.md-typeset h3 {
+  font-size: clamp(calc(var(--fs-h4) * var(--rem)), 0.9rem + 1vw, calc(var(--fs-h3) * var(--rem)));
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: var(--lh-h3);
+  margin: calc(var(--space-6) * var(--rem)) 0 calc(var(--space-3) * var(--rem));
+}
+
+.md-typeset h4 {
+  font-size: calc(var(--fs-h4) * var(--rem));
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: var(--lh-h4);
+  margin: calc(var(--space-5) * var(--rem)) 0 calc(var(--space-2) * var(--rem));
+}
+
+.md-typeset :is(h5, h6) {
+  color: var(--color-text-muted);
+  font-size: calc(var(--fs-micro) * var(--rem));
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: var(--lh-h4);
+  margin: calc(var(--space-5) * var(--rem)) 0 calc(var(--space-2) * var(--rem));
+  text-transform: uppercase;
+}
+
+.md-typeset a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--color-link) 45%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  transition: text-decoration-color var(--duration) ease;
+}
+
+.md-typeset a:is(:hover, :focus-visible) {
+  color: var(--color-link);
+  text-decoration-color: currentcolor;
+  text-decoration-thickness: 2px;
+}
+
+.md-typeset :is(.headerlink, .md-content__button, .md-button, .footnote-backref, .tabbed-labels > label > a),
+.md-typeset .grid.cards a,
+.md-typeset .doc-heading a {
+  text-decoration: none;
+}
+
+.md-typeset .headerlink {
+  color: var(--color-border-strong);
+}
+
+.md-typeset .headerlink:is(:hover, :focus-visible),
+.md-typeset :target > .headerlink {
+  color: var(--color-link);
+}
+
+.md-typeset .md-content__button {
+  color: var(--color-text-subtle);
+}
+
+.md-typeset .md-content__button:is(:hover, :focus-visible) {
+  color: var(--color-link);
+}
+
+.md-typeset hr {
+  border-bottom: 1px solid var(--color-border);
+  margin-block: calc(var(--space-6) * var(--rem));
+}
+
+.md-typeset blockquote {
+  border-left: 2px solid var(--color-border-strong);
+  color: var(--color-text-muted);
+}
+
+.md-typeset small,
+.md-typeset figcaption,
+.md-typeset .footnote {
+  color: var(--color-text-muted);
+  font-size: calc(var(--fs-small) * var(--rem));
+  line-height: var(--lh-ui);
+}
+
+.md-typeset sup,
+.md-typeset sub {
+  font-family: var(--font-sans);
+}
+
+.md-typeset abbr[title] {
+  border-bottom: 1px dotted var(--color-border-strong);
+  text-decoration: none;
+}
+
+/* Lead paragraph and eyebrow label (attr_list: `{ .lead }`, `{ .eyebrow }`). */
+.md-typeset .lead {
+  color: var(--color-text-muted);
+  font-size: calc(var(--fs-h4) * var(--rem));
+  line-height: var(--lh-ui);
+}
+
+.md-typeset .eyebrow {
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: calc(var(--fs-micro) * var(--rem));
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: var(--lh-h4);
+  margin-bottom: calc(var(--space-2) * var(--rem));
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------------------------------------------------------
+ * 5. Code.
+ * ------------------------------------------------------------------------------------------------------- */
+.md-typeset :is(code, kbd, pre) {
+  font-family: var(--font-mono);
+  font-feature-settings: "calt" 0, "liga" 0;
+  font-variant-ligatures: none;
+}
+
+.md-typeset code {
+  border-radius: var(--radius-sm);
+  font-size: 0.9em;
+  hyphens: none;
+  overflow-wrap: anywhere;
+}
+
+.md-typeset :is(h1, h2, h3, h4) code {
+  background-color: transparent;
+  box-shadow: none;
+  padding-inline: 0;
+}
+
+.md-typeset pre > code {
+  border: 1px solid var(--color-border);
+  font-size: calc(var(--fs-small) * var(--rem));
+  line-height: var(--lh-code);
+  overflow-wrap: normal;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+
+.md-typeset pre > code:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.md-typeset .highlight span.filename {
+  border: 1px solid var(--color-border);
+  border-bottom: 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: calc(var(--fs-small) * var(--rem));
+  font-weight: 500;
+}
+
+.md-typeset :is(.md-clipboard, .md-code__button) {
+  color: var(--color-text-subtle);
+}
+
+.md-typeset :is(.md-clipboard, .md-code__button):is(:hover, :focus-visible),
+:hover > .md-code__nav .md-code__button:is(:hover, :focus-visible) {
+  color: var(--color-link);
+}
+
+:hover > .md-code__nav .md-code__button,
+.md-typeset pre:hover > .md-clipboard,
+.md-code__nav {
+  color: var(--color-text-subtle);
+}
+
+.md-code__nav {
+  background-color: var(--color-surface);
+}
+
+.md-typeset kbd {
+  border: 1px solid var(--color-border-strong);
+  box-shadow: 0 1px 0 var(--color-border-strong);
+  color: var(--color-text);
+  font-size: 0.85em;
+}
+
+/* ---------------------------------------------------------------------------------------------------------
+ * 6. Tables: sans, tabular numbers, horizontal rules only; wide tables scroll inside their own container.
+ * ------------------------------------------------------------------------------------------------------- */
+.md-typeset table:not([class]) {
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border-strong);
+  font-family: var(--font-sans);
+  font-size: calc(var(--fs-small) * var(--rem));
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: var(--lh-ui);
+}
+
+.md-typeset table:not([class]) th {
+  background-color: transparent;
+  border-bottom: 1px solid var(--color-border-strong);
+  color: var(--color-text-muted);
+  font-size: calc(var(--fs-micro) * var(--rem));
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  min-width: 0;
+  padding: calc(var(--space-3) * var(--rem)) calc(var(--space-4) * var(--rem));
+  text-transform: uppercase;
+  vertical-align: bottom;
+  white-space: nowrap;
+}
+
+.md-typeset table:not([class]) td {
+  border-top: 1px solid var(--color-border);
+  padding: calc(var(--space-3) * var(--rem)) calc(var(--space-4) * var(--rem));
+  vertical-align: top;
+}
+
+.md-typeset table:not([class]) :is(th, td):first-child {
+  padding-left: 0;
+}
+
+.md-typeset table:not([class]) :is(th, td):last-child {
+  padding-right: 0;
+}
+
+.md-typeset table:not([class]) tbody tr:hover {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.md-typeset table:not([class]) td code {
+  font-size: 0.92em;
+}
+
+.md-typeset .md-typeset__scrollwrap {
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+
+.md-typeset .md-typeset__table {
+  min-width: 0;
+}
+
+/* Numbers with their uncertainty: `0.82 [0.74, 0.88]{ .interval }` */
+.md-typeset .interval {
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* ---------------------------------------------------------------------------------------------------------
+ * 7. Callouts (admonitions and collapsible details): status colour as a tint, an icon and a word.
+ * ------------------------------------------------------------------------------------------------------- */
+.md-typeset :is(.admonition, details) {
+  --callout: var(--color-accent);
+  background-color: color-mix(in srgb, var(--callout) var(--tint-strength), var(--color-bg));
+  border: 1px solid color-mix(in srgb, var(--callout) 30%, var(--color-border));
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  color: var(--color-text);
+  font-size: inherit;
+  padding: calc(var(--space-2) * var(--rem)) calc(var(--space-5) * var(--rem));
+}
+
+.md-typeset :is(.admonition, details):is(.tip, .hint, .important, .success, .check, .done) {
+  --callout: var(--color-success);
+}
+
+.md-typeset :is(.admonition, details):is(.warning, .caution, .attention) {
+  --callout: var(--color-warning);
+}
+
+.md-typeset :is(.admonition, details):is(.failure, .fail, .missing, .danger, .error, .bug) {
+  --callout: var(--color-danger);
+}
+
+.md-typeset :is(.admonition, details):is(.question, .help, .faq, .example) {
+  --callout: var(--color-distinction);
+}
+
+.md-typeset :is(.admonition, details):is(.quote, .cite) {
+  --callout: var(--color-text-subtle);
+}
+
+.md-typeset :is(.admonition, details) > :is(.admonition-title, summary) {
+  background-color: transparent;
+  border: 0;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: calc(var(--fs-small) * var(--rem));
+  font-weight: 650;
+  line-height: var(--lh-ui);
+  margin: 0 calc(var(--space-5) * var(--rem) * -1);
+  padding-block: calc(var(--space-2) * var(--rem));
+  padding-left: calc(var(--space-7) * var(--rem));
+  padding-right: calc(var(--space-5) * var(--rem));
+}
+
+.md-typeset :is(.admonition, details) > :is(.admonition-title, summary)::before {
+  background-color: var(--callout);
+  left: calc(var(--space-5) * var(--rem));
+  top: calc(var(--space-2) * var(--rem) + 0.1em);
+}
+
+.md-typeset details > summary::after {
+  color: var(--color-text-muted);
+  top: calc(var(--space-2) * var(--rem) + 0.1em);
+}
+
+.md-typeset :is(.admonition, details):focus-within {
+  box-shadow: none;
+}
+
+.md-typeset details > summary:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------------------------------------------------
+ * 8. Figures, diagrams, tabs, cards, buttons, maths.
+ * ------------------------------------------------------------------------------------------------------- */
+.md-typeset figure {
+  counter-increment: figure;
+  margin: calc(var(--space-6) * var(--rem)) 0;
+  max-width: min(100%, var(--width-wide));
+  text-align: left;
+  width: auto;
+  display: block;
+}
+
+.md-content {
+  counter-reset: figure;
+}
+
+.md-typeset figure :is(img, svg, video) {
+  border-radius: var(--radius-sm);
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+.md-typeset figcaption {
+  font-family: var(--font-sans);
+  font-style: normal;
+  margin: calc(var(--space-3) * var(--rem)) 0 0;
+  max-width: var(--measure);
+  text-align: left;
+}
+
+.md-typeset figcaption::before {
+  color: var(--color-text);
+  content: "Figure " counter(figure) ". ";
+  font-weight: 600;
+}
+
+.md-typeset .mermaid {
+  margin-block: calc(var(--space-5) * var(--rem));
+  overflow-x: auto;
+  text-align: left;
+}
+
+.md-typeset .tabbed-labels {
+  box-shadow: inset 0 -1px 0 var(--color-border);
+}
+
+.md-typeset .tabbed-labels > label {
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: calc(var(--fs-small) * var(--rem));
+  font-weight: 600;
+}
+
+.md-typeset .tabbed-labels > label:hover,
+.md-typeset .tabbed-set > input:checked + label,
+.md-typeset .tabbed-labels > label > a {
+  color: inherit;
+}
+
+.md-typeset .tabbed-set > input:focus-visible ~ .tabbed-labels::before {
+  outline: 2px solid var(--color-focus);
+}
+
+.md-typeset .grid {
+  gap: calc(var(--space-4) * var(--rem));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  max-width: var(--width-wide);
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li,
+.md-typeset .grid > .card {
+  background-color: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  font-size: calc(var(--fs-ui) * var(--rem));
+  line-height: var(--lh-ui);
+  padding: calc(var(--space-5) * var(--rem));
+  transition: border-color var(--duration) ease;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li:is(:hover, :focus-within),
+.md-typeset .grid > .card:is(:hover, :focus-within) {
+  border-color: var(--color-border-strong);
+  box-shadow: none;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li > :first-child {
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-weight: 650;
+  margin-top: 0;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li > :last-child {
+  margin-bottom: 0;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li > hr {
+  margin-block: calc(var(--space-3) * var(--rem));
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li p {
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+}
+
+.md-typeset .grid.cards a {
+  font-family: var(--font-sans);
+  font-weight: 600;
+}
+
+.md-typeset .md-button {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: calc(var(--fs-ui) * var(--rem));
+  font-weight: 600;
+  line-height: var(--lh-ui);
+  padding: calc(var(--space-2) * var(--rem)) calc(var(--space-4) * var(--rem));
+  transition:
+    background-color var(--duration) ease,
+    border-color var(--duration) ease;
+}
+
+.md-typeset .md-button:is(:hover, :focus-visible) {
+  background-color: var(--color-surface);
+  border-color: var(--color-text);
+  color: var(--color-text);
+}
+
+.md-typeset .md-button--primary {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.md-typeset .md-button--primary:is(:hover, :focus-visible) {
+  background-color: color-mix(in srgb, var(--color-accent) 88%, var(--color-text));
+  border-color: color-mix(in srgb, var(--color-accent) 88%, var(--color-text));
+  color: var(--color-on-accent);
+}
+
+.md-typeset .katex {
+  font-size: 1.08em;
+}
+
+.md-typeset .katex-display {
+  margin-block: calc(var(--space-5) * var(--rem));
+  max-width: var(--measure);
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: calc(var(--space-1) * var(--rem));
+}
+
+/* Home page hero. */
+.md-typeset .hero {
+  margin-bottom: calc(var(--space-7) * var(--rem));
+  max-width: 46rem;
+  padding-top: calc(var(--space-5) * var(--rem));
+}
+
+.md-typeset .hero h1 {
+  font-size: clamp(calc(2.25rem * var(--rem)), 1rem + 4.5vw, calc(var(--fs-display) * var(--rem)));
+  letter-spacing: -0.025em;
+  line-height: var(--lh-display);
+  margin-bottom: calc(var(--space-4) * var(--rem));
+}
+
+.md-typeset .hero .lead {
+  max-width: 38rem;
+}
+
+.md-typeset .hero .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space-3) * var(--rem));
+  margin-top: calc(var(--space-5) * var(--rem));
+}
+
+/* ---------------------------------------------------------------------------------------------------------
+ * 9. API reference (mkdocstrings).
+ * ------------------------------------------------------------------------------------------------------- */
+.md-typeset .doc-heading {
+  font-family: var(--font-sans);
+}
+
+.md-typeset .doc-heading code {
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.md-typeset .doc-symbol {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: 0.7em;
+  font-weight: 600;
+  padding: 0 0.35em;
+}
+
+.md-typeset .doc-contents {
+  border-left: 1px solid var(--color-border);
+  padding-left: calc(var(--space-5) * var(--rem));
+}
+
+.md-typeset .doc-object > .doc-contents.first {
+  border-left: 0;
+  padding-left: 0;
+}
+
+.md-typeset .doc-labels small {
+  font-family: var(--font-sans);
+}
+
+/* ---------------------------------------------------------------------------------------------------------
+ * 10. Focus, motion, touch targets.
+ * ------------------------------------------------------------------------------------------------------- */
+:is(a, button, input, select, summary, label, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.md-skip {
+  background-color: var(--color-accent);
+  border-radius: var(--radius-sm);
+  color: var(--color-on-accent);
+  font-size: calc(var(--fs-small) * var(--rem));
+  font-weight: 600;
+}
+
+@media (pointer: coarse) {
+  .md-nav__link,
+  .md-tabs__link {
+    min-height: 44px;
+    align-items: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------------------
+ * 11. Small screens: the drawer keeps the page colours instead of Material's coloured title bar.
+ * ------------------------------------------------------------------------------------------------------- */
+@media screen and (max-width: 76.2344em) {
+  .md-nav--primary .md-nav__title {
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+
+  .md-nav--primary .md-nav__title[for="__drawer"] {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  .md-nav--primary .md-nav__title .md-nav__icon,
+  .md-nav--primary .md-nav__title ~ .md-nav__list .md-nav__icon {
+    color: var(--color-text-muted);
+  }
+
+  .md-nav--primary .md-nav__item {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .md-nav__source {
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------------------
+ * 12. Print: light paper, no chrome, links spelled out.
+ * ------------------------------------------------------------------------------------------------------- */
+@media print {
+  .md-typeset {
+    font-size: 11pt;
+  }
+
+  .md-typeset a {
+    color: inherit;
+  }
+
+  .md-typeset :is(h1, h2, h3, h4) {
+    break-after: avoid;
+  }
+
+  .md-typeset :is(pre, table, figure, .admonition) {
+    break-inside: avoid;
+  }
+
+  .md-content__button,
+  .md-top {
+    display: none;
+  }
+}

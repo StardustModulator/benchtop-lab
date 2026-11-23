@@ -1,0 +1,16 @@
+{#-
+  SPDX-FileCopyrightText: 2026 Benchtop Lab contributors
+  SPDX-License-Identifier: Apache-2.0
+
+  Theme override for Material for MkDocs: preloads the two fonts every page needs (they are self-hosted, so
+  this is a same-origin request) so text renders in its final typeface without a visible swap.
+-#}
+{% extends "base.html" %}
+
+{% block extrahead %}
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{{ 'assets/fonts/inter/inter-latin-opsz-normal.woff2' | url }}">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{{ 'assets/fonts/source-serif-4/source-serif-4-latin-opsz-normal.woff2' | url }}">
+  <meta name="color-scheme" content="light dark">
+{% endblock %}

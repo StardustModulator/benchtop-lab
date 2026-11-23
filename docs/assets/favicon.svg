@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="Benchtop Lab">
+  <!-- SPDX-FileCopyrightText: 2026 Benchtop Lab contributors -->
+  <!-- SPDX-License-Identifier: CC-BY-4.0 -->
+  <style>
+    rect { fill: #1F4FD1; }
+    g { stroke: #FFFFFF; fill: #FFFFFF; }
+    @media (prefers-color-scheme: dark) {
+      rect { fill: #7FA6FF; }
+      g { stroke: #0E1014; fill: #0E1014; }
+    }
+  </style>
+  <rect width="24" height="24" rx="5"/>
+  <g fill-rule="evenodd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4.5 19h15" fill="none"/>
+    <path d="M8 19v-4l4.5-6 4.5 2.7" fill="none"/>
+    <circle cx="8" cy="15" r="1.2" stroke="none"/>
+    <circle cx="12.5" cy="9" r="1.2" stroke="none"/>
+  </g>
+</svg>

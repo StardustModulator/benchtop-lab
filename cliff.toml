@@ -1,0 +1,57 @@
+# SPDX-FileCopyrightText: 2026 Benchtop Lab contributors
+# SPDX-License-Identifier: Apache-2.0
+#
+# git-cliff configuration: CHANGELOG.md is generated from Conventional Commits (PLAN §11).
+#   uv run git-cliff --output CHANGELOG.md
+# Commit hashes are left out on purpose: the merge flow rebases, so a hash recorded before a merge would not
+# exist on main afterwards.
+
+[changelog]
+header = """
+# Changelog
+
+All notable changes to Benchtop Lab are listed here, newest first. The file is generated from the commit history
+with [git-cliff](https://git-cliff.org/); do not edit it by hand. Versions follow
+[PEP 440](https://peps.python.org/pep-0440/) and the six packages always share one version.
+"""
+body = """
+
+{% if version -%}
+## {{ version | trim_start_matches(pat="v") }} ({{ timestamp | date(format="%Y-%m-%d") }})
+{%- else -%}
+## Unreleased
+{%- endif %}
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | striptags | trim }}
+
+{% for commit in commits -%}
+- {% if commit.breaking %}**Breaking:** {% endif %}{% if commit.scope %}**{{ commit.scope }}:** {% endif %}\
+{{ commit.message | split(pat="\n") | first | trim | upper_first }}
+{% endfor -%}
+{% endfor -%}
+"""
+footer = ""
+trim = false
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+split_commits = false
+protect_breaking_commits = true
+filter_commits = false
+tag_pattern = "v[0-9].*"
+topo_order = false
+sort_commits = "oldest"
+# The HTML comments fix the order of the groups; the template strips them.
+commit_parsers = [
+    { message = "^feat", group = "<!-- 0 -->Features" },
+    { message = "^fix", group = "<!-- 1 -->Fixes" },
+    { message = "^perf", group = "<!-- 2 -->Performance" },
+    { message = "^docs", group = "<!-- 3 -->Documentation" },
+    { message = "^refactor", group = "<!-- 4 -->Refactoring" },
+    { message = "^test", group = "<!-- 5 -->Tests" },
+    { message = "^(build|ci)", group = "<!-- 6 -->Build and CI" },
+    { message = "^chore\\(release\\)", skip = true },
+    { message = "^(chore|style)", group = "<!-- 7 -->Maintenance" },
+    { message = "^revert", group = "<!-- 8 -->Reverts" },
+]
