@@ -9,18 +9,18 @@ Times are IST (Asia/Kolkata, UTC+5:30).
 | --- | --- |
 | Phase | 3: build in progress |
 | Current milestone | M0 Foundations |
-| Next session | **S02 · Continuous integration and repo hygiene** |
-| Sessions done | 1 / 70 (+ 0 contingency used of ~7) |
-| Percent complete | 1.4% |
-| Estimated sessions remaining | 69 |
-| Estimated days remaining | ~28 (69 sessions ÷ 2.5/day; ~30 with the ~7 contingency sessions) |
-| Last green `main` commit | S01 merge (see session log) |
+| Next session | **S03 · Compat layer v0 and `benchtop doctor`** |
+| Sessions done | 2 / 70 (+ 0 contingency used of ~7) |
+| Percent complete | 2.9% |
+| Estimated sessions remaining | 68 |
+| Estimated days remaining | ~27 (68 sessions ÷ 2.5/day; ~30 with the ~7 contingency sessions) |
+| Last green `main` commit | S02 merge, PR #2 (see session log) |
 
 ## Milestones
 
 | Milestone | Sessions | Done | Status |
 | --- | --- | --- | --- |
-| M0 Foundations | S01–S04 | 1/4 | in progress |
+| M0 Foundations | S01–S04 | 2/4 | in progress |
 | M1 Sim core | S05–S09 | 0/5 | not started |
 | M2 Task suite | S10–S16 | 0/7 | not started |
 | M3 Experts and demos | S17–S22 | 0/6 | not started |
@@ -37,7 +37,8 @@ Times are IST (Asia/Kolkata, UTC+5:30).
 | ID | Item | Needed by |
 | --- | --- | --- |
 | D1 | Confirm the name "Benchtop Lab" (renaming later is cheap until S04, costly after) | S04 |
-| D7 | Allow branch protection on `main` (no force-push, require CI) and drop the unused `delete_repo` scope from the build machine's GitHub login | S02 |
+| D7 | Allow branch protection on `main` (no force-push, require the **CI passed** check) and drop the unused `delete_repo` scope from the build machine's GitHub login. **Still pending after S02**: not applied without approval; the exact command is in the S02 log entry | now |
+| D8 | Enable GitHub Discussions (PLAN §16 uses it for Q&A, show-and-tell and RFCs); until then proposals use the Task proposal issue form | S41 |
 | D2 | Free Kaggle account for GPU reference runs (optional) | S40 |
 | D3 | Hugging Face account/org for EnvHub Spaces, datasets, checkpoints (optional) | S36 |
 | D4 | PyPI account for Trusted Publishing of `benchtop-lab` (optional) | S70 |
@@ -48,8 +49,12 @@ Times are IST (Asia/Kolkata, UTC+5:30).
 
 - S04 `tools/bump_version.py`: pin inter-package dependencies as `==<shared version>` so PyPI installs keep the
   six packages in lockstep (today they depend on each other unpinned; the workspace keeps them aligned locally).
-- S02: install `make` on the CI image (and note it in CONTRIBUTING) — the build machine has none, so the Makefile
-  has not been executed yet; only its targets are checked by a test.
+- README still carries the "Status: planning" badge and note; refresh it when the docs site lands (S04).
+- Remove the `|| [ $$? -eq 5 ]` guards from `make test-slow` / `test-render` once tests with those markers exist
+  (S05 for render, S03 or S05 for slow), so an accidentally empty suite fails again.
+- Freeze pre-commit hook revisions to commit SHAs (`pre-commit autoupdate --freeze`) so local hooks match the
+  SHA-pinning rule used for workflows; it also bumps versions, so do it as its own small change.
+- Nightly: add an issue-on-failure or badge check once there is something long-running to watch (S09 onwards).
 - If a second `conftest.py` is ever needed, switch mypy to `explicit_package_bases` (test file names must be unique
   today; enforced by `tests/test_repo_tooling.py`).
 
@@ -69,6 +74,62 @@ Template for each entry (newest first):
 - Notes for next session: <context that would otherwise be lost>
 - Usage: stopped early due to usage limit? yes/no
 -->
+
+### S02 · Continuous integration and repo hygiene — DONE
+- Date (IST): 2026-11-23 17:56–18:09
+- Branch / PR: `session/S02-ci-repo-hygiene` → PR #2, rebase-merged by `land-pr.sh` after green CI (ADR-008).
+- Done:
+  - `.github/workflows/ci.yml` on every pull request and push to `main`: `lint` (ruff, ruff format, import-linter,
+    file-hygiene hooks, actionlint), `typecheck` (mypy strict), `test` (ubuntu-latest, Python 3.12 and 3.13, 85%
+    coverage gate), `slow`, `render` (`MUJOCO_GL=egl`; apt `libegl1 libegl-mesa0 libgl1-mesa-dri libosmesa6`
+    verified to install on ubuntu-latest), `reuse` (isolated `uvx`, ADR-010), `gitleaks` (release binary 8.30.1
+    verified by SHA-256, scans the full history, `--redact`), and `ci-ok` ("CI passed"): one always-running summary
+    check meant to be the single required status for branch protection.
+  - `.github/actions/setup`: shared composite action (uv 0.13.8 pinned, uv cache keyed on `uv.lock`,
+    `uv sync --locked --all-packages --all-groups --extra cpu`; `torch: none` for the lint job).
+  - `.github/workflows/nightly.yml` skeleton: 02:00 IST schedule + manual start, ubuntu-latest and macos-latest ×
+    Python 3.12/3.13, fast + slow suites. It also runs on pull requests that change it or the setup action, which
+    is how the macOS legs were proven green on PR #2.
+  - Every action pinned to a full commit SHA with a `# vX.Y.Z` comment (checkout v7.0.1, setup-uv v10.4.0, cache
+    v6.1.0); top-level `permissions: contents: read`; `persist-credentials: false`; no secrets; job timeouts;
+    no `${{ }}` inside `run:` scripts. `tests/test_ci_config.py` enforces all of it.
+  - Issue forms (bug, task proposal, lesson feedback) with blank issues off and a private-security-report link;
+    `PULL_REQUEST_TEMPLATE.md`; `CODEOWNERS`; `dependabot.yml` (weekly grouped PRs for GitHub Actions, including the
+    composite action directory, and for uv); `SECURITY.md` (GitHub private vulnerability reporting, scope, targets).
+  - `actionlint` v1.7.12 pre-commit hook (uses shellcheck when installed). Makefile: new `test-slow`,
+    `test-render`, `hooks`; CI calls the Makefile targets, so the Makefile is now executed on every run.
+  - README: CI and Nightly badges. CONTRIBUTING: CI section, security row, task proposals via the issue form.
+- Repository setting changed: **private vulnerability reporting enabled** via `gh api -X PUT
+  repos/StardustModulator/benchtop-lab/private-vulnerability-reporting` (SECURITY.md depends on it; undo with
+  `-X DELETE`). Nothing else on the repository was changed.
+- Branch protection (D7): **pending, not applied** (no recorded owner approval). After approval run:
+  `gh api -X PUT repos/StardustModulator/benchtop-lab/branches/main/protection --input -` with
+  `{"required_status_checks":{"strict":true,"contexts":["CI passed"]},"enforce_admins":false,
+  "required_pull_request_reviews":null,"restrictions":null,"allow_force_pushes":false,"allow_deletions":false,
+  "required_linear_history":true}`.
+- Dependencies added (dev group only, permissive): `pyyaml` (MIT; was already locked through pre-commit) and
+  `types-pyyaml` (Apache-2.0) for the workflow tests.
+- Tests: 133/133 passed, coverage 98.6%; slow 0/0 and render 0/0 (none exist yet); ruff, ruff format, mypy --strict,
+  lint-imports (4/4 kept), pre-commit (all hooks incl. actionlint), reuse lint clean. CI on PR #2: all 13 checks
+  green (9 from `ci.yml`, 4 nightly-matrix legs incl. macOS arm64 with `torch==2.15.0+cpu` on both Pythons).
+  `ubuntu-latest` currently resolves to Ubuntu 26.04.
+- Reviewer: CHANGES REQUIRED on the first pass (PR template allowed small binaries; CONTRIBUTING/SECURITY overstated
+  enforcement and still pointed at Discussions; test gaps: secrets spelling, composite script never executed,
+  concurrency, uv version drift, issue-form schema); all fixed, plus the nits except hook-rev freezing (follow-up).
+- Next: S03 Compat layer v0 and `benchtop doctor`.
+- Blockers: none. D7 still waits on the owner; D8 (enable Discussions) is new and not urgent.
+- Notes for next session:
+  - Merge with `/workspace/projects/benchtop-lab-runner/land-pr.sh` (not `gh pr merge`). Open the PR early as a
+    draft to get CI feedback, mark it ready (`gh pr ready`) before landing; the script refuses drafts.
+  - CI installs torch through `--extra cpu`; the local gate does not. When S03 adds `lerobot`, make sure the
+    locked sync still works on Python 3.13 and on macOS arm64 (the nightly matrix runs on PRs that touch
+    `nightly.yml` or the setup action; touch one of them in S03 to prove it, or start the workflow by hand).
+  - `make test-slow` / `make test-render` accept pytest's exit code 5 (no tests collected). Drop that guard in the
+    session that adds the first test with the marker.
+  - New workflow files must satisfy `tests/test_ci_config.py`; a new job in `ci.yml` must be added to `ci-ok.needs`
+    and to the expected job set in the test.
+  - Dependabot will open grouped PRs on Mondays; they are the owner's to merge (or a session may fold them in).
+- Usage: stopped early due to usage limit? no
 
 ### S01 · Monorepo skeleton and quality tooling — DONE
 - Date (IST): 2026-11-23 17:05–18:00

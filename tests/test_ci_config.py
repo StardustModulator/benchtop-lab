@@ -2,7 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 """CI and repository-hygiene invariants: pinned actions, least privilege, gate jobs, community files."""
 
+import os
 import re
+import shutil
+import subprocess
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
@@ -111,9 +114,36 @@ def test_workflow_never_runs_untrusted_code_with_secrets(path: Path) -> None:
     events = triggers(load(path))
     assert "pull_request_target" not in events
     assert "workflow_run" not in events
-    assert "secrets." not in path.read_text(encoding="utf-8"), (
-        "CI needs no secrets (PLAN §11: no tokens in CI)"
-    )
+    text = path.read_text(encoding="utf-8")
+    assert not uses_secrets(text), "CI needs no secrets (PLAN §11: no tokens in CI)"
+
+
+def uses_secrets(text: str) -> bool:
+    return re.search(r"\bsecrets\s*[.\[]|\bgithub\.token\b|\bGITHUB_TOKEN\b", text) is not None
+
+
+@pytest.mark.parametrize(
+    ("text", "found"),
+    [
+        ("${{ secrets.HF_TOKEN }}", True),
+        ("${{ secrets['HF_TOKEN'] }}", True),
+        ("${{ secrets [ 'X' ] }}", True),
+        ("token: ${{ github.token }}", True),
+        ("GH_TOKEN: $GITHUB_TOKEN", True),
+        ("# no secrets are needed here", False),
+        ("name: Secret scan (gitleaks)", False),
+    ],
+)
+def test_secret_detection_catches_every_spelling(text: str, found: bool) -> None:
+    assert uses_secrets(text) is found
+
+
+@pytest.mark.parametrize("path", WORKFLOWS, ids=ids(WORKFLOWS))
+def test_only_pull_request_runs_are_cancelled_by_newer_ones(path: Path) -> None:
+    # Cancelling unconditionally would cancel runs on main and leave those commits without a green check.
+    concurrency = load(path)["concurrency"]
+    assert concurrency["cancel-in-progress"] == "${{ github.event_name == 'pull_request' }}"
+    assert "github.event.pull_request.number || github.ref" in concurrency["group"]
 
 
 @pytest.mark.parametrize("path", WORKFLOWS + ACTIONS, ids=ids(WORKFLOWS + ACTIONS))
@@ -223,10 +253,58 @@ class TestSetupAction:
         assert uv["with"]["enable-cache"] is True
         assert uv["with"]["cache-dependency-glob"] == "uv.lock"
 
-    def test_sync_is_locked_and_can_select_cpu_torch(self, steps: list[dict[str, Any]]) -> None:
-        script = "\n".join(str(s.get("run", "")) for s in steps)
-        assert "uv sync --locked --all-packages --all-groups" in script
-        assert "--extra cpu" in script
+    def test_other_jobs_install_the_same_uv_version(self, steps: list[dict[str, Any]]) -> None:
+        # Dependabot bumps the action SHA, not the `version:` input, so the copies could drift apart.
+        versions = {
+            step["with"]["version"]
+            for path in WORKFLOWS + ACTIONS
+            for _, step in steps_of(load(path))
+            if str(step.get("uses", "")).startswith("astral-sh/setup-uv@")
+        }
+        assert len(versions) == 1, f"pin one uv version everywhere, found {sorted(versions)}"
+
+    @pytest.mark.parametrize(
+        ("flavour", "expected"),
+        [
+            ("cpu", "sync --locked --all-packages --all-groups --extra cpu"),
+            ("none", "sync --locked --all-packages --all-groups"),
+        ],
+    )
+    def test_sync_is_locked_and_selects_the_torch_flavour(
+        self, steps: list[dict[str, Any]], tmp_path: Path, flavour: str, expected: str
+    ) -> None:
+        result = run_sync_step(steps, tmp_path, flavour)
+        assert result.returncode == 0, result.stderr
+        assert (tmp_path / "uv-args.txt").read_text(encoding="utf-8").strip() == expected
+
+    def test_sync_rejects_an_unknown_torch_flavour(self, steps: list[dict[str, Any]], tmp_path: Path) -> None:
+        result = run_sync_step(steps, tmp_path, "cu999")
+        assert result.returncode == 2
+        assert "::error::Unknown torch flavour 'cu999'" in result.stdout
+        assert not (tmp_path / "uv-args.txt").exists(), "uv must not run with an unknown flavour"
+
+
+def run_sync_step(
+    steps: list[dict[str, Any]], tmp_path: Path, flavour: str
+) -> subprocess.CompletedProcess[str]:
+    """Run the composite action's sync script with a stub `uv` that records its arguments."""
+    script = next(str(s["run"]) for s in steps if "uv sync" in str(s.get("run", "")))
+    bash = shutil.which("bash")
+    assert bash, "bash is required to test the setup action"
+    stub = tmp_path / "bin" / "uv"
+    stub.parent.mkdir()
+    stub.write_text(f'#!/bin/sh\necho "$*" > "{tmp_path / "uv-args.txt"}"\n', encoding="utf-8")
+    stub.chmod(0o755)
+    env = {"PATH": f"{stub.parent}{os.pathsep}{os.environ['PATH']}", "TORCH_FLAVOUR": flavour}
+    # GitHub runs `shell: bash` steps as `bash --noprofile --norc -eo pipefail`.
+    return subprocess.run(
+        [bash, "--noprofile", "--norc", "-eo", "pipefail", "-c", script],
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=30,
+    )
 
 
 class TestNightlyWorkflow:
@@ -290,7 +368,14 @@ def test_issue_form_is_valid(name: str) -> None:
     field_ids = [field["id"] for field in inputs]
     assert len(field_ids) == len(set(field_ids)), "field ids must be unique"
     for field in inputs:
-        assert field["attributes"]["label"], f"{field['id']} needs a visible label"
+        attributes = field["attributes"]
+        # GitHub drops a form that breaks its schema from the chooser without any error.
+        assert re.fullmatch(r"[A-Za-z0-9_-]+", field["id"]), f"invalid field id {field['id']!r}"
+        assert attributes["label"], f"{field['id']} needs a visible label"
+        if field["type"] in {"dropdown", "checkboxes"}:
+            assert attributes["options"], f"{field['id']} needs at least one option"
+        if "render" in attributes:
+            assert field["type"] == "textarea", f"{field['id']}: only a textarea may set `render`"
     assert any(field.get("validations", {}).get("required") for field in inputs), "require at least one field"
 
 

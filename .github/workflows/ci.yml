@@ -97,6 +97,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # EGL is the path we use. Upstream Mesa has dropped OSMesa; if libosmesa6 leaves the runner image's
+      # archive, remove it here and in PLAN §12 instead of pinning an old image.
       - name: Install offscreen OpenGL (EGL, with OSMesa as the fallback)
         run: |
           sudo apt-get update
