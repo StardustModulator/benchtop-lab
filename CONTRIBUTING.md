@@ -31,7 +31,8 @@ uv run pre-commit install
 uv run pytest -q
 ```
 
-> The repository is in its build phase; the commands above become available with milestone M0 (session S01).
+> `make setup` runs the first two commands, `make gate` runs ruff, mypy, import-linter and the tests, and
+> `make help` lists every target.
 
 ## Pull request checklist
 
